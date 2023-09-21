@@ -74,6 +74,9 @@ public class BattleCommand implements CommandExecutor {
                                 }
                                 else {
                                     scoreboard.registerNewTeam(teamName);
+                                    Team team = scoreboard.getTeam(teamName);
+                                    team.setAllowFriendlyFire(false);
+                                    team.setCanSeeFriendlyInvisibles(true);
                                     player.sendMessage(prefix + ChatColor.GREEN + "Team " + ChatColor.BOLD + teamName + ChatColor.RESET + ChatColor.GREEN + " added");
                                 }
                             } else isPromptCorrect = false;
@@ -101,7 +104,7 @@ public class BattleCommand implements CommandExecutor {
                                     Team team = scoreboard.getTeam(teamName);
                                     Player target = Bukkit.getPlayerExact(playerName);
                                     if (target != null) {
-                                        addToTeam(player, team);
+                                        addToTeam(target, team);
                                         player.sendMessage(prefix + ChatColor.GREEN + "Player " + ChatColor.BOLD + playerName + ChatColor.RESET + ChatColor.GREEN + " was added to team " + ChatColor.BOLD + teamName);
                                     }
                                     else {

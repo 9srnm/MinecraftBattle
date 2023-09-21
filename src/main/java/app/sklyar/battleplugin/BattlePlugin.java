@@ -2,6 +2,7 @@ package app.sklyar.battleplugin;
 
 import app.sklyar.battleplugin.classes.Parameters;
 import app.sklyar.battleplugin.commands.BattleCommand;
+import app.sklyar.battleplugin.listeners.PlayerDeathListener;
 import app.sklyar.battleplugin.tabCompletion.BattleTabCompletion;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
@@ -24,5 +25,6 @@ public final class BattlePlugin extends JavaPlugin {
         BattleTabCompletion battleTabCompletion = new BattleTabCompletion(scoreboard);
         getCommand("battle").setExecutor(battleCommand);
         getCommand("battle").setTabCompleter(battleTabCompletion);
+        getServer().getPluginManager().registerEvents(new PlayerDeathListener(scoreboard), this);
     }
 }

@@ -48,7 +48,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
                 <configuration>
-                    <outputDirectory>/Users/srnm/Documents/Programming/Minecraft Battle/server/plugins</outputDirectory>
+                    <outputDirectory>C:\Users\uBaxa\OneDrive\Рабочий стол\Server_git\Server\plugins</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>
