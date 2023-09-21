@@ -5,6 +5,10 @@ import com.sun.org.apache.bcel.internal.generic.ARETURN;
 public class Parameters {
     private static int gameDay = 0, spawnRadius = 100, dayLength = 1200, nightLength = 600, borderLength = 2000, borderShrinkTime = 600;
 
+    public String getAllParameters() {
+        return "gameDay: " + gameDay + "\nspawnRadius: " + spawnRadius + "\ndayLength: " + dayLength + "\nnightLength: " + nightLength + "\nborderLength: " + borderLength + "\nborderShrinkTime: " + borderShrinkTime;
+    }
+
     public int getGameDay() {
         return gameDay;
     }

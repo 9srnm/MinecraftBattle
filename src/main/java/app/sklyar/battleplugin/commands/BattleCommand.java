@@ -52,6 +52,13 @@ public class BattleCommand implements CommandExecutor {
                 String secondaryCommand = args[0];
                 if (secondaryCommand.equalsIgnoreCase("stop")) {
                     parameters.changeGameDay(0);
+//                    block break listener remove
+//                    scheduler remove
+//                    border reset
+//                    gamerule doDaylightCycle true
+                }
+                else if (parameters.getGameDay() != 0) {
+                    player.sendMessage(prefix + ChatColor.RED + "You can't run this command while the Battle is ongoing");
                 }
                 else if (secondaryCommand.equalsIgnoreCase("start")) {
                     System.out.println("battle start");
@@ -143,6 +150,64 @@ public class BattleCommand implements CommandExecutor {
                             player.sendMessage(message.toString());
                         }
                     }
+                }
+                else if (secondaryCommand.equalsIgnoreCase("setSpawnRadius")) {
+                    if (args.length > 1) {
+                        try {
+                            int value = Integer.parseInt(args[1]);
+                            parameters.changeSpawnRadius(value);
+                            player.sendMessage(prefix + ChatColor.GREEN + ChatColor.BOLD + secondaryCommand + ChatColor.RESET + ChatColor.GREEN + " was set to " + ChatColor.BOLD + args[1]);
+                        } catch (NumberFormatException nfe) {
+                            player.sendMessage(prefix + ChatColor.RED + "This is not an integer");
+                        }
+                    }
+                }
+                else if (secondaryCommand.equalsIgnoreCase("setDayLength")) {
+                    if (args.length > 1) {
+                        try {
+                            int value = Integer.parseInt(args[1]);
+                            parameters.changeDayLength(value);
+                            player.sendMessage(prefix + ChatColor.GREEN + ChatColor.BOLD + secondaryCommand + ChatColor.RESET + ChatColor.GREEN + " was set to " + ChatColor.BOLD + args[1]);
+                        } catch (NumberFormatException nfe) {
+                            player.sendMessage(prefix + ChatColor.RED + "This is not an integer");
+                        }
+                    }
+                }
+                else if (secondaryCommand.equalsIgnoreCase("setNightLength")) {
+                    if (args.length > 1) {
+                        try {
+                            int value = Integer.parseInt(args[1]);
+                            parameters.changeNightLength(value);
+                            player.sendMessage(prefix + ChatColor.GREEN + ChatColor.BOLD + secondaryCommand + ChatColor.RESET + ChatColor.GREEN + " was set to " + ChatColor.BOLD + args[1]);
+                        } catch (NumberFormatException nfe) {
+                            player.sendMessage(prefix + ChatColor.RED + "This is not an integer");
+                        }
+                    }
+                }
+                else if (secondaryCommand.equalsIgnoreCase("setBorderLength")) {
+                    if (args.length > 1) {
+                        try {
+                            int value = Integer.parseInt(args[1]);
+                            parameters.changeBorderLength(value);
+                            player.sendMessage(prefix + ChatColor.GREEN + ChatColor.BOLD + secondaryCommand + ChatColor.RESET + ChatColor.GREEN + " was set to " + ChatColor.BOLD + args[1]);
+                        } catch (NumberFormatException nfe) {
+                            player.sendMessage(prefix + ChatColor.RED + "This is not an integer");
+                        }
+                    }
+                }
+                else if (secondaryCommand.equalsIgnoreCase("setBorderShrinkTime")) {
+                    if (args.length > 1) {
+                        try {
+                            int value = Integer.parseInt(args[1]);
+                            parameters.changeBorderShrinkTime(value);
+                            player.sendMessage(prefix + ChatColor.GREEN + ChatColor.BOLD + secondaryCommand + ChatColor.RESET + ChatColor.GREEN + " was set to " + ChatColor.BOLD + args[1]);
+                        } catch (NumberFormatException nfe) {
+                            player.sendMessage(prefix + ChatColor.RED + "This is not an integer");
+                        }
+                    }
+                }
+                else if (secondaryCommand.equalsIgnoreCase("getSettings")) {
+                    player.sendMessage(parameters.getAllParameters());
                 }
                 else {
                     player.sendMessage(prefix + ChatColor.RED + "Unknown command: " + ChatColor.BOLD + secondaryCommand);

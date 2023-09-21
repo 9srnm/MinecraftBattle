@@ -21,7 +21,7 @@ public final class BattlePlugin extends JavaPlugin {
 
         Parameters parameters = new Parameters();
         BattleCommand battleCommand = new BattleCommand(parameters, scoreboard);
-        BattleTabCompletion battleTabCompletion = new BattleTabCompletion(battleCommand, scoreboard);
+        BattleTabCompletion battleTabCompletion = new BattleTabCompletion(scoreboard);
         getCommand("battle").setExecutor(battleCommand);
         getCommand("battle").setTabCompleter(battleTabCompletion);
     }

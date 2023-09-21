@@ -14,11 +14,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class BattleTabCompletion implements TabCompleter {
-    private final BattleCommand battleCommand;
     private final Scoreboard scoreboard;
 
-    public BattleTabCompletion(BattleCommand battleCmd, Scoreboard s) {
-        battleCommand = battleCmd;
+    public BattleTabCompletion(Scoreboard s) {
         scoreboard = s;
     }
 
