@@ -77,7 +77,7 @@ public class BattleTabCompletion implements TabCompleter {
                     List<String> players = new ArrayList<String>();
                     for (Player player :
                             Bukkit.getServer().getOnlinePlayers()) {
-                        if (scoreboard.getEntryTeam(player.getName()) != null) {
+                        if (scoreboard.getEntryTeam(player.getName()) == null) {
                             players.add(player.getName());
                         }
                     }
