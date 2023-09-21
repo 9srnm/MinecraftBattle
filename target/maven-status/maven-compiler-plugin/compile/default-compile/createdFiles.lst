@@ -1,0 +1,5 @@
+app/sklyar/battleplugin/BattlePlugin.class
+app/sklyar/battleplugin/listeners/BlockBreakListener.class
+app/sklyar/battleplugin/commands/BattleTabCompletion.class
+app/sklyar/battleplugin/classes/Team.class
+app/sklyar/battleplugin/commands/BattleCommand.class
