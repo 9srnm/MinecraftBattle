@@ -1,0 +1,13 @@
+name: BattlePlugin
+version: '1.0'
+main: app.sklyar.battleplugin.BattlePlugin
+api-version: '1.19'
+commands:
+  battle:
+    description: "Create your own battles! Play team vs team. No limitations."
+    permission: battle.permission
+    usage: "Usage: /battle [start|stop|teams|setSpawnRadius|setDayLength|setNightLength|setBorderLength|setBorderShrinkTime]"
+permissions:
+  battle.premission:
+    description: "Allows you access /battle command"
+    default: true
