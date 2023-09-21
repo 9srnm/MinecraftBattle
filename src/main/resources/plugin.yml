@@ -6,7 +6,7 @@ commands:
   battle:
     description: "Create your own battles! Play team vs team. No limitations."
     permission: battle.permission
-    usage: "Usage: /battle [start|teams|setSpawnRadius|setDayLength|setNightLength|setBorderLength|setBorderShrinkTime]"
+    usage: "Usage: /battle [start|stop|teams|setSpawnRadius|setDayLength|setNightLength|setBorderLength|setBorderShrinkTime]"
 permissions:
   battle.premission:
     description: "Allows you access /battle command"

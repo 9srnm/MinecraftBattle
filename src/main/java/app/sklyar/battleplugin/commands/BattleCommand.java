@@ -1,148 +1,139 @@
 package app.sklyar.battleplugin.commands;
 
-import app.sklyar.battleplugin.classes.Team;
+import app.sklyar.battleplugin.classes.Parameters;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 public class BattleCommand implements CommandExecutor {
     private String prefix = "" + ChatColor.AQUA + ChatColor.BOLD + "[BATTLE] " + ChatColor.RESET;
-    private List<Team> teams = new ArrayList<Team>();
 
-    private String getTeamName(String[] strings, int from) {
-        List<String> words = new ArrayList<>(Arrays.asList(strings));
-        words = words.subList(from, words.size());
-        String teamName = String.join(" ", words);
-        return teamName;
+    private final Scoreboard scoreboard;
+
+    private final Parameters parameters;
+
+    public BattleCommand(Parameters p, Scoreboard s) {
+        parameters = p;
+        scoreboard = s;
+        cleanTeams(s);
     }
-    private int getTeamIndex(String teamName) {
-        int count = -1;
-        for (Team team:
-                teams) {
-            count += 1;
-            if (team.getName().equals(teamName)) {
-                return count;
-            }
+
+    private void cleanTeams(Scoreboard scoreboard){
+        for(Team team: scoreboard.getTeams()){
+            team.unregister();
         }
-        return -1;
     }
 
-    public List<Team> getTeams() {
-        return teams;
+    private void addToTeam(Player player, Team team) {
+        removePlayerFromTeams(player);
+        team.addEntry(player.getName());
+        player.setScoreboard(scoreboard);
     }
 
-    private int getPlayerTeamIndex(String playerName) {
-        int count = -1;
-        for (Team team :
-                teams) {
-            count += 1;
-            List<String> teamPlayers = new ArrayList<>(Arrays.asList(team.getPlayers()));
-            if (teamPlayers.contains(playerName)) {
-                return count;
-            }
+    private void removePlayerFromTeams(Player player){
+        for(Team team : scoreboard.getTeams()){
+            team.removePlayer(player);
         }
-        return -1;
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+    @Deprecated
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if (commandSender instanceof Player) {
             boolean isPromptCorrect = true;
             Player player = ((Player) commandSender).getPlayer();
             if (player == null) return false;
-            if (strings.length > 0) {
-                String secondaryCommand = strings[0];
-                if (secondaryCommand.equalsIgnoreCase("start")) {
+            if (args.length > 0) {
+                String secondaryCommand = args[0];
+                if (secondaryCommand.equalsIgnoreCase("stop")) {
+                    parameters.changeGameDay(0);
+                }
+                else if (secondaryCommand.equalsIgnoreCase("start")) {
                     System.out.println("battle start");
                 }
                 else if (secondaryCommand.equalsIgnoreCase("teams")) {
-                    if (strings.length > 1) {
-                        String teamAction = strings[1];
+                    if (args.length > 1) {
+                        String teamAction = args[1];
                         if (teamAction.equalsIgnoreCase("addTeam")) {
-                            if (strings.length > 2) {
-                                String teamName = getTeamName(strings, 2);
-                                int teamIndex = getTeamIndex(teamName);
-                                boolean isTeamExists = teamIndex != -1;
-                                if (isTeamExists) {
+                            if (args.length > 2) {
+                                String teamName = args[2];
+                                if (scoreboard.getTeam(teamName) != null) {
                                     player.sendMessage(prefix + ChatColor.YELLOW + "Team already exists");
                                 }
                                 else {
-                                    Team newTeam = new Team(teamName);
-                                    teams.add(newTeam);
+                                    scoreboard.registerNewTeam(teamName);
                                     player.sendMessage(prefix + ChatColor.GREEN + "Team " + ChatColor.BOLD + teamName + ChatColor.RESET + ChatColor.GREEN + " added");
                                 }
                             } else isPromptCorrect = false;
                         }
                         else if (teamAction.equalsIgnoreCase("delTeam")) {
-                            if (strings.length > 2) {
-                                String teamName = getTeamName(strings, 2);
-                                int teamIndex = getTeamIndex(teamName);
-                                boolean isTeamExists = teamIndex != -1;
-                                if (!isTeamExists) {
+                            if (args.length > 2) {
+                                String teamName = args[2];
+                                if (scoreboard.getTeam(teamName) == null) {
                                     player.sendMessage(prefix + ChatColor.YELLOW + "Team does not exist");
                                 }
                                 else {
-                                    teams.remove(teamIndex);
+                                    scoreboard.getTeam(teamName).unregister();
                                     player.sendMessage(prefix + ChatColor.GREEN + "Team " + ChatColor.BOLD + teamName + ChatColor.RESET + ChatColor.GREEN + " has been deleted");
                                 }
                             } else isPromptCorrect = false;
                         }
                         else if (teamAction.equalsIgnoreCase("addPlayer")) {
-                            if (strings.length > 3) {
-                                String playerName = strings[2];
-                                String teamName = getTeamName(strings, 3);
-                                int teamIndex = getTeamIndex(teamName);
-                                boolean isTeamExists = teamIndex != -1;
-                                if (!isTeamExists) {
+                            if (args.length > 3) {
+                                String playerName = args[2];
+                                String teamName = args[3];
+                                if (scoreboard.getTeam(teamName) == null) {
                                     player.sendMessage(prefix + ChatColor.YELLOW + "Team does not exist");
                                 }
                                 else {
-                                    int playerTeamIndex = getPlayerTeamIndex(playerName);
-                                    if (playerTeamIndex == -1) {
-                                        teams.get(teamIndex).addPlayer(playerName);
+                                    Team team = scoreboard.getTeam(teamName);
+                                    Player target = Bukkit.getPlayerExact(playerName);
+                                    if (target != null) {
+                                        addToTeam(player, team);
                                         player.sendMessage(prefix + ChatColor.GREEN + "Player " + ChatColor.BOLD + playerName + ChatColor.RESET + ChatColor.GREEN + " was added to team " + ChatColor.BOLD + teamName);
                                     }
                                     else {
-                                        player.sendMessage(prefix + ChatColor.YELLOW + "Player is already in team " + ChatColor.BOLD + teams.get(playerTeamIndex).getName());
+                                        player.sendMessage(prefix + ChatColor.YELLOW + "Player does not exist ");
                                     }
                                 }
                             } else isPromptCorrect = false;
                         }
                         else if (teamAction.equalsIgnoreCase("delPlayer")) {
-                            if (strings.length > 2) {
-                                String playerName = strings[2];
-                                int playerTeamIndex = getPlayerTeamIndex(playerName);
-                                if (playerTeamIndex == -1) {
+                            if (args.length > 2) {
+                                String playerName = args[2];
+                                Player target = Bukkit.getPlayerExact(playerName);
+                                if (target == null) {
+                                    player.sendMessage(prefix + ChatColor.YELLOW + "Player does not exist ");
+                                }
+                                if (target.getScoreboard().getPlayerTeam(target) == null) {
                                     player.sendMessage(prefix + ChatColor.YELLOW + "Player is not in any team");
                                 }
                                 else {
-                                    teams.get(playerTeamIndex).removePlayer(playerName);
-                                    player.sendMessage(prefix + ChatColor.GREEN + "Player " + ChatColor.BOLD + playerName + ChatColor.RESET + ChatColor.GREEN + " was removed from team " + ChatColor.BOLD + teams.get(playerTeamIndex).getName());
+                                    String team = target.getScoreboard().getPlayerTeam(target).getName();
+                                    removePlayerFromTeams(target);
+                                    player.sendMessage(prefix + ChatColor.GREEN + "Player " + ChatColor.BOLD + playerName + ChatColor.RESET + ChatColor.GREEN + " was removed from team " + ChatColor.BOLD + team);
                                 }
                             } else isPromptCorrect = false;
                         }
                         else isPromptCorrect = false;
                     }
                     else {
-                        if (teams.isEmpty()) {
+                        if (scoreboard.getTeams().isEmpty()) {
                             player.sendMessage(prefix + ChatColor.YELLOW + "There are no teams yet");
                         }
                         else {
                             StringBuilder message = new StringBuilder(prefix + ChatColor.GREEN + "List of teams: \n" + ChatColor.RESET);
-                            for (Team team :
-                                    teams) {
+                            for (Team team : scoreboard.getTeams()) {
                                 message.append(ChatColor.BOLD).append(team.getName()).append(": ");
-                                if (team.getPlayers().length == 0) message.append("Currently no players\n");
+                                if (team.getPlayers().isEmpty()) message.append("Currently no players\n");
                                 else {
-                                    for (String playerName :
-                                            team.getPlayers()) {
-                                        message.append(ChatColor.RESET).append(playerName).append(", ");
+                                    for (String entry : team.getEntries()) {
+                                        message.append(ChatColor.RESET).append(entry).append(", ");
                                     }
                                     message = new StringBuilder(message.substring(0, message.length() - 2));
                                     message.append("\n");

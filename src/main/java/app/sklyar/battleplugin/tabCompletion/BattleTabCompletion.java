@@ -1,13 +1,13 @@
 package app.sklyar.battleplugin.tabCompletion;
 
-import app.sklyar.battleplugin.BattlePlugin;
-import app.sklyar.battleplugin.classes.Team;
 import app.sklyar.battleplugin.commands.BattleCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,9 +15,11 @@ import java.util.List;
 
 public class BattleTabCompletion implements TabCompleter {
     private final BattleCommand battleCommand;
+    private final Scoreboard scoreboard;
 
-    public BattleTabCompletion(BattleCommand battleCmd) {
+    public BattleTabCompletion(BattleCommand battleCmd, Scoreboard s) {
         battleCommand = battleCmd;
+        scoreboard = s;
     }
 
     private List<String> removeUnnecessaryCommands(List<String> availableCommands, String written) {
@@ -67,31 +69,25 @@ public class BattleTabCompletion implements TabCompleter {
                 String teamAction = strings[1];
                 String written = strings[2];
                 if (teamAction.equalsIgnoreCase("delTeam")) {
-                    List<Team> teams = battleCommand.getTeams();
+                    List<String> teams = new ArrayList<String>();
                     for (Team team :
-                            teams) {
-                        availableCommands.add(team.getName());
+                            scoreboard.getTeams()) {
+                        teams.add(team.getName());
                     }
-                } else if (teamAction.equalsIgnoreCase("addPlayer")) {
-                    Player[] onlinePlayers = new Player[Bukkit.getServer().getOnlinePlayers().size()];
-                    Bukkit.getServer().getOnlinePlayers().toArray(onlinePlayers);
-                    List<String> addedPlayers = new ArrayList<>();
-                    for (Team team :
-                            battleCommand.getTeams()) {
-                        addedPlayers.addAll(Arrays.asList(team.getPlayers()));
-                    }
+                    availableCommands = teams;
+                } else if (teamAction.equalsIgnoreCase("addPlayer")) {;
+                    List<String> players = new ArrayList<String>();
                     for (Player player :
-                            onlinePlayers) {
-                        if (!addedPlayers.contains(player.getName())) {
-                            availableCommands.add(player.getName());
+                            Bukkit.getServer().getOnlinePlayers()) {
+                        if (scoreboard.getEntryTeam(player.getName()) != null) {
+                            players.add(player.getName());
                         }
                     }
-
+                    availableCommands = players;
                 } else if (teamAction.equalsIgnoreCase("delPlayer")) {
-                    for (Team team :
-                            battleCommand.getTeams()) {
-                        availableCommands.addAll(Arrays.asList(team.getPlayers()));
-                    }
+                    List<String> teams = new ArrayList<String>();
+                    teams.addAll(scoreboard.getEntries());
+                    availableCommands = teams;
                 }
                 availableCommands = removeUnnecessaryCommands(availableCommands, written);
             }
@@ -102,10 +98,12 @@ public class BattleTabCompletion implements TabCompleter {
                 String teamAction = strings[1];
                 String written = strings[3];
                 if (teamAction.equalsIgnoreCase("addPlayer")) {
+                    List<String> teams = new ArrayList<String>();
                     for (Team team:
-                         battleCommand.getTeams()) {
-                        availableCommands.add(team.getName());
+                        scoreboard.getTeams()) {
+                        teams.add(team.getName());
                     }
+                    availableCommands = teams;
                 }
                 availableCommands = removeUnnecessaryCommands(availableCommands, written);
             }
