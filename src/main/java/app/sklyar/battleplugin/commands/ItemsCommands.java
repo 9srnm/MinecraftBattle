@@ -20,6 +20,12 @@ public class ItemsCommands implements CommandExecutor {
             player.setMaxHealth(20);
         }
 
+        if (command.getName().equalsIgnoreCase("give_elderwand")) {
+            Player player = (Player) commandSender;
+            player.getInventory().addItem(ItemManager.elderwand);
+            player.setMaxHealth(20);
+        }
+
         return true;
     }
 }

@@ -33,9 +33,10 @@ public final class BattlePlugin extends JavaPlugin {
         getCommand("battle").setTabCompleter(battleTabCompletion);
 
         getCommand("give_stormbreaker").setExecutor(new ItemsCommands());
-      
-        getServer().getPluginManager().registerEvents(new PlayerDeathListener(scoreboard), this);
+        getCommand("give_elderwand").setExecutor(new ItemsCommands());
+
         getServer().getPluginManager().registerEvents(new ItemsUsageListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerDeathListener(scoreboard), this);
 
         getServer().getPluginManager().registerEvents(new BlockBreakListener(parameters), this);
     }

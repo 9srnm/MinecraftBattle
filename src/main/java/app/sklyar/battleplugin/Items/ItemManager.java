@@ -6,6 +6,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ItemManager {
 
@@ -34,6 +36,7 @@ public class ItemManager {
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.LUCK, 1, false);
         AttributeModifier damage = new AttributeModifier(UUID.randomUUID(), "generic.attackDamage", 70, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
         meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, damage);
         item.setItemMeta(meta);
@@ -57,6 +60,7 @@ public class ItemManager {
         lore.add("§7The most powerful magic wand");
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        meta.addEnchant(Enchantment.LUCK, 1, false);
         meta.setUnbreakable(true);
         AttributeModifier attackSpeed = new AttributeModifier(UUID.randomUUID(), "generic.attackSpeed", -3.5, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
         meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, attackSpeed);
