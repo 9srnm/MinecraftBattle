@@ -28,7 +28,7 @@ public class WandUsageListener implements Listener {
                     for (int i = 0; i < 5; i++) {
                         player.getWorld().strikeLightningEffect(block.getLocation());
                     }
-                    player.getWorld().createExplosion(block.getLocation(), 4, true, true, player);
+                    player.getWorld().createExplosion(block.getLocation(), 8, true, true, player);
                 }
             }
         }

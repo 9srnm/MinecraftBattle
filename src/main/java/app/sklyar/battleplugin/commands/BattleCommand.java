@@ -5,10 +5,12 @@ import app.sklyar.battleplugin.classes.Parameters;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameRule;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -18,6 +20,26 @@ public class BattleCommand implements CommandExecutor {
     private final Scoreboard scoreboard;
 
     private final Parameters parameters;
+
+    private final Recipe[] diamondRequiredRecipes = new Recipe[]{
+            Bukkit.getServer().getRecipe(Material.DIAMOND_BOOTS.getKey()),
+            Bukkit.getServer().getRecipe(Material.DIAMOND_AXE.getKey()),
+            Bukkit.getServer().getRecipe(Material.DIAMOND_BLOCK.getKey()),
+            Bukkit.getServer().getRecipe(Material.DIAMOND_HOE.getKey()),
+            Bukkit.getServer().getRecipe(Material.DIAMOND_CHESTPLATE.getKey()),
+            Bukkit.getServer().getRecipe(Material.DIAMOND_HELMET.getKey()),
+            Bukkit.getServer().getRecipe(Material.DIAMOND_LEGGINGS.getKey()),
+            Bukkit.getServer().getRecipe(Material.DIAMOND_PICKAXE.getKey()),
+            Bukkit.getServer().getRecipe(Material.DIAMOND_SHOVEL.getKey()),
+            Bukkit.getServer().getRecipe(Material.DIAMOND_SWORD.getKey())
+    };
+    
+    private final Recipe goldenAppleRecipe = Bukkit.getServer().getRecipe(Material.GOLDEN_APPLE.getKey());
+    private final Recipe[] restrictedRecipes = new Recipe[]{
+            Bukkit.getServer().getRecipe(Material.ENCHANTING_TABLE.getKey()),
+            Bukkit.getServer().getRecipe(Material.BREWING_STAND.getKey()),
+            Bukkit.getServer().getRecipe(Material.BLAZE_POWDER.getKey())
+    };
 
     public BattleCommand(Parameters p, Scoreboard s) {
         parameters = p;
@@ -43,6 +65,23 @@ public class BattleCommand implements CommandExecutor {
         }
     }
 
+    private void removeRecipes(int day, Player player) {
+        player.getServer().resetRecipes();
+        if (day < 2) {
+            for (Recipe diamondItem :
+                    diamondRequiredRecipes) {
+                player.getServer().removeRecipe(diamondItem.getResult().getType().getKey());
+            }
+        }
+        if (day < 4) {
+            player.getServer().removeRecipe(goldenAppleRecipe.getResult().getType().getKey());
+        }
+        for (Recipe restrictedItem :
+                restrictedRecipes) {
+            player.getServer().removeRecipe(restrictedItem.getResult().getType().getKey());
+        }
+    }
+
     @Override
     @Deprecated
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
@@ -55,10 +94,15 @@ public class BattleCommand implements CommandExecutor {
                 if (secondaryCommand.equalsIgnoreCase("stop")) {
                     BukkitScheduler scheduler = Bukkit.getScheduler();
                     scheduler.cancelTasks(BattlePlugin.getInstance());
+
                     parameters.changeGameDay(0);
                     parameters.changeGameRuns(false);
+
                     player.getWorld().getWorldBorder().reset();
                     player.getWorld().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
+
+                    player.getServer().resetRecipes();
+                    player.getWorld().setGameRule(GameRule.DO_LIMITED_CRAFTING, false);
                 }
                 else if (parameters.getGameRuns()) {
                     player.sendMessage(parameters.getPrefix() + ChatColor.RED + "You can't run this command while the Battle is ongoing");
@@ -72,6 +116,8 @@ public class BattleCommand implements CommandExecutor {
                     player.getWorld().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
                     player.getWorld().setTime(23999);
 
+                    player.getWorld().setGameRule(GameRule.DO_LIMITED_CRAFTING, true);
+
                     BukkitScheduler scheduler = Bukkit.getScheduler();
                     scheduler.runTaskTimer(BattlePlugin.getInstance(), () -> {
                         if (!parameters.getGameRuns()) {
@@ -81,8 +127,8 @@ public class BattleCommand implements CommandExecutor {
                             long timeNow = player.getWorld().getTime();
                             if (timeNow < parameters.getPreviousTime()) {
                                 parameters.changeGameDay(parameters.getGameDay() + 1);
-                                player.sendMessage(parameters.getGameDay() + " day");
-                                if (parameters.getGameDay() == 5) {
+                                removeRecipes(parameters.getGameDay(), player);
+                                if (parameters.getGameDay() == 6) {
                                     player.getWorld().getWorldBorder().setSize(1, parameters.getBorderShrinkTime());
                                 }
                             }

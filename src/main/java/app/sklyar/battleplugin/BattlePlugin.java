@@ -37,7 +37,6 @@ public final class BattlePlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(scoreboard), this);
         getServer().getPluginManager().registerEvents(new WandUsageListener(), this);
 
-        getServer().getPluginManager().registerEvents(new PlayerDeathListener(scoreboard), this);
         getServer().getPluginManager().registerEvents(new BlockBreakListener(parameters), this);
     }
 }
