@@ -1,6 +1,5 @@
 package app.sklyar.battleplugin.tabCompletion;
 
-import app.sklyar.battleplugin.commands.BattleCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,7 +23,7 @@ public class BattleTabCompletion implements TabCompleter {
         List<String> newAvailableCommands = new ArrayList<>();
         for (String command :
                 availableCommands) {
-            if (command.toLowerCase().startsWith(written.toLowerCase())) {
+            if (command.toLowerCase().contains(written.toLowerCase())) {
                 newAvailableCommands.add(command);
             }
         }
@@ -35,7 +34,7 @@ public class BattleTabCompletion implements TabCompleter {
         List<String> availableCommands = new ArrayList<>();
         if (strings.length == 1) {
             String written = strings[0];
-            availableCommands = Arrays.asList("start", "teams", "setSpawnRadius", "setDayLength", "setNightLength", "setBorderLength", "setBorderShrinkTime");
+            availableCommands = Arrays.asList("start", "stop", "teams", "setSpawnRadius", "setDayLength", "setNightLength", "setBorderLength", "setBorderShrinkTime");
             availableCommands = removeUnnecessaryCommands(availableCommands, written);
         }
         else if (strings.length == 2) {
