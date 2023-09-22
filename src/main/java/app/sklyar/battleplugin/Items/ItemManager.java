@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class ItemManager {
 
-    public  static ItemStack magicWand;
+    public static ItemStack magicWand;
 
     public static void init() {
         createMagicWand();
