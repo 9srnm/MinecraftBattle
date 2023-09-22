@@ -3,10 +3,10 @@ package app.sklyar.battleplugin;
 import app.sklyar.battleplugin.Items.ItemManager;
 import app.sklyar.battleplugin.classes.Parameters;
 import app.sklyar.battleplugin.commands.BattleCommand;
-import app.sklyar.battleplugin.commands.MagicWandCommand;
+import app.sklyar.battleplugin.commands.ItemsCommands;
 import app.sklyar.battleplugin.listeners.BlockBreakListener;
 import app.sklyar.battleplugin.listeners.PlayerDeathListener;
-import app.sklyar.battleplugin.listeners.WandUsageListener;
+import app.sklyar.battleplugin.listeners.ItemsUsageListener;
 import app.sklyar.battleplugin.tabCompletion.BattleTabCompletion;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
@@ -32,10 +32,10 @@ public final class BattlePlugin extends JavaPlugin {
         getCommand("battle").setExecutor(battleCommand);
         getCommand("battle").setTabCompleter(battleTabCompletion);
 
-        getCommand("give_wand").setExecutor(new MagicWandCommand());
+        getCommand("give_stormbreaker").setExecutor(new ItemsCommands());
       
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(scoreboard), this);
-        getServer().getPluginManager().registerEvents(new WandUsageListener(), this);
+        getServer().getPluginManager().registerEvents(new ItemsUsageListener(), this);
 
         getServer().getPluginManager().registerEvents(new BlockBreakListener(parameters), this);
     }
