@@ -6,6 +6,7 @@ import app.sklyar.battleplugin.inventories.ShopInventory;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -14,14 +15,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.nio.channels.SelectableChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InventoryListener implements Listener {
 
     private final HashMap<ItemStack, Integer> shopItemsLvl2;
-
     private final HashMap<ItemStack, Integer> shopItemsLvl1;
     public InventoryListener(HashMap<ItemStack, Integer> shopItemsLvl1, HashMap<ItemStack, Integer> shopItemsLvl2) {
         this.shopItemsLvl1 = shopItemsLvl1;
@@ -34,31 +37,39 @@ public class InventoryListener implements Listener {
             event.setCancelled(true);
             Player player = (Player) event.getWhoClicked();
             if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR){
-                ItemStack item = event.getCurrentItem();
+                ItemStack item = event.getCurrentItem().clone();
+                ItemMeta meta = item.getItemMeta();
+                List<String> lore = meta.getLore();
+                lore.remove(lore.size() - 1);
+                meta.setLore(lore);
+                item.setItemMeta(meta);
+                meta.setLore(lore);
                 HashMap<ItemStack, Integer> shopItems;
                 if (shopItemsLvl1.containsKey(item)) {
                     shopItems = shopItemsLvl1;
                     Integer itemCost = shopItems.get(item);
                     Integer coinsCount = 0;
                     for(ItemStack itemStack : player.getInventory().getContents()){
-                        if (itemStack != null && itemStack == ItemManager.coinlvl1){
+                        if (itemStack != null && itemStack.getType() == ItemManager.coinlvl1.getType()){
                             coinsCount += itemStack.getAmount();
                         }
                     }
                     if (coinsCount >= itemCost){
-                        player.getInventory().addItem(item);
-                        for (int i = 0; i < player.getInventory().getSize(); i++) {
-                            ItemStack itemToRemove = player.getInventory().getItem(i);
-                            if (item != null && itemToRemove == ItemManager.coinlvl1) {
-                                int amount = itemToRemove.getAmount();
-                                if (amount >= itemCost) {
-                                    item.setAmount(amount - itemCost);
-                                    player.getInventory().setItem(i, item);
+                        if (item.getType() == Material.ENCHANTED_GOLDEN_APPLE){
+                            double playerMaxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+                            if (playerMaxHealth <= 18) { player.setMaxHealth(playerMaxHealth + 2); }
+                        }
+                        else{ player.getInventory().addItem(item); }
+                        ItemStack[] inventory = player.getInventory().getContents();
+                        for (ItemStack target : inventory) {
+                            if (target != null && target.getType().toString().equalsIgnoreCase(ItemManager.coinlvl1.getType().toString())) {
+                                if (target.getAmount() >= itemCost) {
+                                    target.setAmount(target.getAmount() - itemCost);
                                     break;
-                                } else {
-                                    itemCost -= amount;
-                                    item.setAmount(0);
-                                    player.getInventory().setItem(i, null);
+                                }
+                                else{
+                                    itemCost -= target.getAmount();
+                                    target.setAmount(target.getAmount() - target.getAmount());
                                 }
                             }
                         }
@@ -66,27 +77,28 @@ public class InventoryListener implements Listener {
                 }
                 else {
                     shopItems = shopItemsLvl2;
+                    if (item.getType() == Material.BOW){
+                        player.getInventory().addItem(new ItemStack(Material.ARROW, 1));
+                    }
                     Integer itemCost = shopItems.get(item);
                     Integer coinsCount = 0;
                     for(ItemStack itemStack : player.getInventory().getContents()){
-                        if (itemStack != null && itemStack == ItemManager.coinlvl2){
+                        if (itemStack != null && itemStack.getType() == ItemManager.coinlvl2.getType()){
                             coinsCount += itemStack.getAmount();
                         }
                     }
                     if (coinsCount >= itemCost){
                         player.getInventory().addItem(item);
-                        for (int i = 0; i < player.getInventory().getSize(); i++) {
-                            ItemStack itemToRemove = player.getInventory().getItem(i);
-                            if (item != null && itemToRemove == ItemManager.coinlvl2) {
-                                int amount = itemToRemove.getAmount();
-                                if (amount >= itemCost) {
-                                    item.setAmount(amount - itemCost);
-                                    player.getInventory().setItem(i, item);
+                        ItemStack[] inventory = player.getInventory().getContents();
+                        for (ItemStack target : inventory) {
+                            if (target != null && target.getType().toString().equalsIgnoreCase(ItemManager.coinlvl2.getType().toString())) {
+                                if (target.getAmount() >= itemCost) {
+                                    target.setAmount(target.getAmount() - itemCost);
                                     break;
-                                } else {
-                                    itemCost -= amount;
-                                    item.setAmount(0);
-                                    player.getInventory().setItem(i, null);
+                                }
+                                else{
+                                    itemCost -= target.getAmount();
+                                    target.setAmount(target.getAmount() - target.getAmount());
                                 }
                             }
                         }

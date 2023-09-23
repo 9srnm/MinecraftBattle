@@ -26,6 +26,8 @@ public class ItemManager {
     public static ItemStack excalibur;
     public static ItemStack coinlvl1;
     public static ItemStack coinlvl2;
+    public static ItemStack healthhealer;
+    public static ItemStack robinsbow;
 
 
     public static void init() {
@@ -37,6 +39,8 @@ public class ItemManager {
         createExcalibur();
         createCoinLvl1();
         createCoinLvl2();
+        createHealthHealer();
+        createRobinsBow();
     }
 
     private static void createStormbreaker() {
@@ -158,7 +162,7 @@ public class ItemManager {
     }
 
     private static void createCoinLvl1() {
-        ItemStack item = new ItemStack(Material.ENDER_EYE, 64);
+        ItemStack item = new ItemStack(Material.GHAST_TEAR, 64);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§6CoinLvl1");
         List<String> lore = new ArrayList<>();
@@ -184,6 +188,38 @@ public class ItemManager {
         meta.addEnchant(Enchantment.LUCK, 3, false);
         item.setItemMeta(meta);
         coinlvl2 = item;
+    }
 
+    private static void createHealthHealer() {
+        ItemStack item = new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6Healt_hHealer");
+        List<String> lore = new ArrayList<>();
+        lore.add("§2If you have smaller then 10 hearts");
+        lore.add("§2Heal you 1 heart");
+        meta.setLore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.LUCK, 3, false);
+        item.setItemMeta(meta);
+        healthhealer = item;
+    }
+
+    private static void createRobinsBow() {
+        ItemStack item = new ItemStack(Material.BOW, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6Robin_Hood's_Bow");
+        List<String> lore = new ArrayList<>();
+        lore.add("§2Еhe bow of the legendary");
+        lore.add("§2fighter for justice");
+        meta.setLore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.ARROW_DAMAGE, 2, false);
+        meta.addEnchant(Enchantment.ARROW_FIRE, 1, false);
+        meta.addEnchant(Enchantment.ARROW_INFINITE, 1, false);
+        meta.addEnchant(Enchantment.ARROW_KNOCKBACK, 1, false);
+        item.setItemMeta(meta);
+        robinsbow = item;
     }
 }

@@ -1,16 +1,19 @@
 package app.sklyar.battleplugin.listeners;
 
 import app.sklyar.battleplugin.Items.ItemManager;
+import app.sklyar.battleplugin.inventories.ShopInventory;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -110,7 +113,6 @@ public class ItemsUsageListener implements Listener {
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
         Entity damaged = event.getEntity();
-        damager.sendMessage(damaged.getName().toString());
         if (damager instanceof Player) {
             Player player = (Player) damager;
             if (player.getInventory().getItemInMainHand().getItemMeta().equals(ItemManager.excalibur.getItemMeta())){
@@ -123,5 +125,18 @@ public class ItemsUsageListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onProjectileHit(ProjectileHitEvent event) {
+        if (event.getEntityType() == EntityType.ARROW) {
+            if (event.getEntity().getShooter() instanceof Player) {
+                Player shooter = (Player) event.getEntity().getShooter();
+                ItemStack bow = shooter.getInventory().getItemInMainHand();
+
+                if (bow.getItemMeta().equals(ItemManager.robinsbow.getItemMeta())) {
+                    event.getEntity().getWorld().strikeLightning(event.getEntity().getLocation());
+                }
+            }
+        }
+    }
 
 }
