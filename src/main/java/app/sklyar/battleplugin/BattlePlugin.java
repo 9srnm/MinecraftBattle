@@ -8,12 +8,15 @@ import app.sklyar.battleplugin.commands.TestCommands;
 import app.sklyar.battleplugin.listeners.*;
 import app.sklyar.battleplugin.listeners.BlocksUsageListener;
 import app.sklyar.battleplugin.tabCompletion.BattleTabCompletion;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.Bukkit;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public final class BattlePlugin extends JavaPlugin {
     private static BattlePlugin plugin;
@@ -26,6 +29,8 @@ public final class BattlePlugin extends JavaPlugin {
         plugin = this;
 
         ItemManager.init();
+
+        List<Entity> lst = new ArrayList<>();
         HashMap<ItemStack, Integer> shopItemsLvl2 = new HashMap<ItemStack, Integer>() {{
             put(ItemManager.excalibur, 3);
             put(ItemManager.robinsbow, 2);
@@ -52,7 +57,8 @@ public final class BattlePlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(scoreboard), this);
         getServer().getPluginManager().registerEvents(new InventoryListener(shopItemsLvl1, shopItemsLvl2), this);
         getServer().getPluginManager().registerEvents(new BlocksUsageListener(shopItemsLvl1, shopItemsLvl2), this);
-        getServer().getPluginManager().registerEvents(new EntityDeathListener(), this);
+        getServer().getPluginManager().registerEvents(new EntityDeathListener(lst), this);
+        getServer().getPluginManager().registerEvents(new TrapBreakListener(lst), this);
 
         getServer().getPluginManager().registerEvents(new BlockBreakListener(parameters), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(parameters, scoreboard), this);
