@@ -95,7 +95,7 @@ public class ItemsUsageListener implements Listener {
                         double[] new_z = {2, 2, 2, 0, 0, -2, -2, -2};
                         double[] new_x = {-2, 0, 2, 2, 2, 0, -2, -2};
                         for(int i = 0; i < 8; i++){
-                            player.getWorld().createExplosion(new Location(player.getWorld(), x + new_x[i], y + 1, z + new_z[i]), 2, true, true, player);
+                            player.getWorld().createExplosion(new Location(player.getWorld(), x + new_x[i], y, z + new_z[i]), 2, true, true, player);
                         }
                         for (int i = 0; i < 5; i++) {
                             player.getWorld().strikeLightningEffect(player.getLocation());

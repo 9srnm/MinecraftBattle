@@ -21,12 +21,11 @@ public class ItemManager {
     public static ItemStack stormbreaker;
     public static ItemStack elderwand;
     public static ItemStack stonespear;
-
     public static ItemStack ironspear;
-
     public static ItemStack diamondspear;
-
     public static ItemStack excalibur;
+    public static ItemStack coinlvl1;
+    public static ItemStack coinlvl2;
 
 
     public static void init() {
@@ -36,6 +35,8 @@ public class ItemManager {
         createISpear();
         createDSpear();
         createExcalibur();
+        createCoinLvl1();
+        createCoinLvl2();
     }
 
     private static void createStormbreaker() {
@@ -153,6 +154,36 @@ public class ItemManager {
         //meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, damage);
         item.setItemMeta(meta);
         excalibur = item;
+
+    }
+
+    private static void createCoinLvl1() {
+        ItemStack item = new ItemStack(Material.ENDER_EYE, 64);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6CoinLvl1");
+        List<String> lore = new ArrayList<>();
+        lore.add("§2Coin lvl 1 for shop");
+        meta.setLore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.LUCK, 3, false);
+        item.setItemMeta(meta);
+        coinlvl1 = item;
+
+    }
+
+    private static void createCoinLvl2() {
+        ItemStack item = new ItemStack(Material.NETHER_STAR, 64);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6CoinLvl2");
+        List<String> lore = new ArrayList<>();
+        lore.add("§2Coin lvl 2 for shop");
+        meta.setLore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.LUCK, 3, false);
+        item.setItemMeta(meta);
+        coinlvl2 = item;
 
     }
 }

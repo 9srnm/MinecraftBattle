@@ -13,6 +13,8 @@ commands:
     description: "Give you a Elder wand"
   give_excalibur:
     description: "Give you a Excalibur"
+  open_shop:
+    description: "Give you a Excalibur"
 permissions:
   battle.premission:
     description: "Allows you access /battle command"
