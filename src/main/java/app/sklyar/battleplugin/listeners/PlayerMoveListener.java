@@ -1,7 +1,9 @@
 package app.sklyar.battleplugin.listeners;
 
 import app.sklyar.battleplugin.classes.Parameters;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,7 +22,7 @@ public class PlayerMoveListener implements Listener {
     }
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-        if (parameters.getGameDay() == 1) {
+        if (parameters.getGameDay() == 1 || e.getPlayer().getGameMode() == GameMode.SPECTATOR && e.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() < 2) {
             Player player = e.getPlayer();
             int sectorsAmount = Integer.highestOneBit(scoreboard.getTeams().size() - 1) * 2;
             int zLength = Math.pow((int) Math.sqrt(sectorsAmount), 2) == sectorsAmount ? (int) Math.sqrt(sectorsAmount) : (int) Math.sqrt(sectorsAmount / 2);
@@ -32,12 +34,12 @@ public class PlayerMoveListener implements Listener {
                     int zSector = i / xLength;
                     int xSector = i % xLength;
                     Location spawn = player.getWorld().getSpawnLocation();
-                    int coordinateX = (int) spawn.getX() - parameters.getBorderLength() / 2 + parameters.getBorderLength() * xSector / xLength + parameters.getBorderLength() / (2 * xLength);
-                    int coordinateZ = (int) spawn.getZ() - parameters.getBorderLength() / 2 + parameters.getBorderLength() * zSector / zLength + parameters.getBorderLength() / (2 * zLength);
+                    int coordinateX = (int) spawn.getX() - (int) player.getWorld().getWorldBorder().getSize() / 2 + (int) player.getWorld().getWorldBorder().getSize() * xSector / xLength + (int) player.getWorld().getWorldBorder().getSize() / (2 * xLength);
+                    int coordinateZ = (int) spawn.getZ() - (int) player.getWorld().getWorldBorder().getSize() / 2 + (int) player.getWorld().getWorldBorder().getSize() * zSector / zLength + (int) player.getWorld().getWorldBorder().getSize() / (2 * zLength);
                     double distanceFrom = Math.pow(e.getFrom().getX() - coordinateX, 2) + Math.pow(e.getFrom().getZ() - coordinateZ, 2);
                     double distanceTo = Math.pow(e.getTo().getX() - coordinateX, 2) + Math.pow(e.getTo().getZ() - coordinateZ, 2);
-                    if ((Math.abs(player.getLocation().getX() - coordinateX) > parameters.getBorderLength() / (2 * xLength) ||
-                        Math.abs(player.getLocation().getZ() - coordinateZ) > parameters.getBorderLength() / (2 * zLength)) && (distanceFrom < distanceTo)) {
+                    if ((Math.abs(player.getLocation().getX() - coordinateX) > (int) player.getWorld().getWorldBorder().getSize() / (2 * xLength) ||
+                        Math.abs(player.getLocation().getZ() - coordinateZ) > (int) player.getWorld().getWorldBorder().getSize() / (2 * zLength)) && (distanceFrom < distanceTo)) {
                         double speed = 10;
                         double xV = (coordinateX - player.getLocation().getX()) / distanceTo * speed;
                         double zV = (coordinateZ - player.getLocation().getZ()) / distanceTo * speed;

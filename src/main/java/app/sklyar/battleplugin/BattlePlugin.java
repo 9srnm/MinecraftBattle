@@ -4,10 +4,7 @@ import app.sklyar.battleplugin.Items.ItemManager;
 import app.sklyar.battleplugin.classes.Parameters;
 import app.sklyar.battleplugin.commands.BattleCommand;
 import app.sklyar.battleplugin.commands.ItemsCommands;
-import app.sklyar.battleplugin.listeners.BlockBreakListener;
-import app.sklyar.battleplugin.listeners.PlayerDeathListener;
-import app.sklyar.battleplugin.listeners.ItemsUsageListener;
-import app.sklyar.battleplugin.listeners.PlayerMoveListener;
+import app.sklyar.battleplugin.listeners.*;
 import app.sklyar.battleplugin.tabCompletion.BattleTabCompletion;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
@@ -37,9 +34,10 @@ public final class BattlePlugin extends JavaPlugin {
         getCommand("give_excalibur").setExecutor(new ItemsCommands());
 
         getServer().getPluginManager().registerEvents(new ItemsUsageListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerDeathListener(scoreboard), this);
+        getServer().getPluginManager().registerEvents(new PlayerDamageListener(scoreboard, parameters), this);
 
         getServer().getPluginManager().registerEvents(new BlockBreakListener(parameters), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(parameters, scoreboard), this);
+        getServer().getPluginManager().registerEvents(new EnchantmentTableEvent(parameters), this);
     }
 }
