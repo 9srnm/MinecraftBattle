@@ -2,18 +2,21 @@ package app.sklyar.battleplugin.commands;
 
 import app.sklyar.battleplugin.BattlePlugin;
 import app.sklyar.battleplugin.classes.Parameters;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameRule;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import sun.security.krb5.internal.APRep;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 public class BattleCommand implements CommandExecutor {
 
@@ -103,46 +106,94 @@ public class BattleCommand implements CommandExecutor {
 
                     player.getServer().resetRecipes();
                     player.getWorld().setGameRule(GameRule.DO_LIMITED_CRAFTING, false);
+
+                    player.sendMessage(parameters.getPrefix() + ChatColor.GREEN + "Battle has been finished");
                 }
                 else if (parameters.getGameRuns()) {
                     player.sendMessage(parameters.getPrefix() + ChatColor.RED + "You can't run this command while the Battle is ongoing");
                 }
                 else if (secondaryCommand.equalsIgnoreCase("start")) {
-                    parameters.changeGameRuns(true);
-
-                    player.getWorld().getWorldBorder().setCenter(player.getWorld().getSpawnLocation());
-                    player.getWorld().getWorldBorder().setSize(parameters.getBorderLength());
-
-                    player.getWorld().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-                    player.getWorld().setTime(23999);
-
-                    player.getWorld().setGameRule(GameRule.DO_LIMITED_CRAFTING, true);
-
-                    BukkitScheduler scheduler = Bukkit.getScheduler();
-                    scheduler.runTaskTimer(BattlePlugin.getInstance(), () -> {
-                        if (!parameters.getGameRuns()) {
-                            return;
+                    boolean allInTeams = true;
+                    for (Player p:
+                         Bukkit.getServer().getOnlinePlayers()) {
+                        if (scoreboard.getPlayerTeam(p) == null) {
+                            allInTeams = false;
+                            break;
                         }
-                        else {
-                            long timeNow = player.getWorld().getTime();
-                            if (timeNow < parameters.getPreviousTime()) {
-                                parameters.changeGameDay(parameters.getGameDay() + 1);
-                                removeRecipes(parameters.getGameDay(), player);
-                                if (parameters.getGameDay() == 6) {
-                                    player.getWorld().getWorldBorder().setSize(1, parameters.getBorderShrinkTime());
+                    }
+                    System.out.println(allInTeams);
+                    boolean allTeamsHavePlayer = true;
+                    for (Team team:
+                        scoreboard.getTeams()) {
+                        boolean hasPlayerOnline = false;
+                        for (String pString:
+                            team.getEntries()) {
+                            Player p = Bukkit.getServer().getPlayer(pString);
+                            if (p != null && p.isOnline()) {
+                                hasPlayerOnline = true;
+                                break;
+                            }
+                        }
+                        if (!hasPlayerOnline) {
+                            allTeamsHavePlayer = false;
+                            break;
+                        }
+                    }
+                    System.out.println(allTeamsHavePlayer);
+                    if (allInTeams && allTeamsHavePlayer && scoreboard.getTeams().size() > 1) {
+                        parameters.changeGameRuns(true);
+
+                        int sectorsAmount = Integer.highestOneBit(scoreboard.getTeams().size() - 1) * 2;
+                        int zLength = Math.pow((int) Math.sqrt(sectorsAmount), 2) == sectorsAmount ? (int) Math.sqrt(sectorsAmount) : (int) Math.sqrt(sectorsAmount / 2);
+                        int xLength = sectorsAmount / zLength;
+                        Team[] teams = new Team[scoreboard.getTeams().size()];
+                        scoreboard.getTeams().toArray(teams);
+                        for (int i = 0; i < teams.length; i++) {
+                            int zSector = i / xLength;
+                            int xSector = i % xLength;
+                            Location spawn = player.getWorld().getSpawnLocation();
+                            int coordinateX = (int) spawn.getX() - parameters.getBorderLength() / 2 + parameters.getBorderLength() * xSector / xLength + parameters.getBorderLength() / (2 * xLength);
+                            int coordinateZ = (int) spawn.getZ() - parameters.getBorderLength() / 2 + parameters.getBorderLength() * zSector / zLength + parameters.getBorderLength() / (2 * zLength);
+                            for (String pString:
+                                 teams[i].getEntries()) {
+                                Player p = Bukkit.getServer().getPlayer(pString);
+                                if (p != null) p.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().add(0, 1, 0));
+                            };
+                        }
+
+                        player.getWorld().getWorldBorder().setCenter(player.getWorld().getSpawnLocation());
+                        player.getWorld().getWorldBorder().setSize(parameters.getBorderLength());
+
+                        player.getWorld().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+                        player.getWorld().setTime(23999);
+
+                        player.getWorld().setGameRule(GameRule.DO_LIMITED_CRAFTING, true);
+
+                        BukkitScheduler scheduler = Bukkit.getScheduler();
+                        scheduler.runTaskTimer(BattlePlugin.getInstance(), () -> {
+                            if (!parameters.getGameRuns()) {
+                                return;
+                            } else {
+                                long timeNow = player.getWorld().getTime();
+                                if (timeNow < parameters.getPreviousTime()) {
+                                    parameters.changeGameDay(parameters.getGameDay() + 1);
+                                    removeRecipes(parameters.getGameDay(), player);
+                                    if (parameters.getGameDay() == 6) {
+                                        player.getWorld().getWorldBorder().setSize(1, parameters.getBorderShrinkTime());
+                                    }
                                 }
+                                parameters.changePreviousTime(timeNow);
+                                int speed;
+                                if (timeNow < 12000) {
+                                    speed = 12000 / parameters.getDayLength();
+                                } else {
+                                    speed = 12000 / parameters.getNightLength();
+                                }
+                                player.getWorld().setTime(player.getWorld().getTime() + speed);
                             }
-                            parameters.changePreviousTime(timeNow);
-                            int speed;
-                            if (timeNow < 12000) {
-                                speed = 12000 / parameters.getDayLength();
-                            }
-                            else {
-                                speed = 12000 / parameters.getNightLength();
-                            }
-                            player.getWorld().setTime(player.getWorld().getTime() + speed);
-                        }
-                    }, 0, 20);
+                        }, 0, 20);
+                    }
+                    else player.sendMessage(parameters.getPrefix() + ChatColor.RED + "Every person online should be in a team and every team should include at least one person online");
                 }
                 else if (secondaryCommand.equalsIgnoreCase("teams")) {
                     if (args.length > 1) {
