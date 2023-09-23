@@ -9,10 +9,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 
 public class ItemsUsageListener implements Listener {
@@ -77,6 +84,67 @@ public class ItemsUsageListener implements Listener {
                     }
                 }
             }
+            if (event.getItem().getItemMeta().equals(ItemManager.excalibur.getItemMeta())) {
+                if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    if (!player.hasCooldown(event.getMaterial())) {
+                        player.setCooldown(event.getMaterial(), 20);
+                        Location loc = player.getLocation();
+                        double x = loc.getX();
+                        double y = loc.getY();
+                        double z = loc.getZ();
+                        double[] new_z = {2, 2, 2, 0, 0, -2, -2, -2};
+                        double[] new_x = {-2, 0, 2, 2, 2, 0, -2, -2};
+                        for(int i = 0; i < 8; i++){
+                            player.getWorld().createExplosion(new Location(player.getWorld(), x + new_x[i], y + 1, z + new_z[i]), 2, true, true, player);
+                        }
+                        for (int i = 0; i < 5; i++) {
+                            player.getWorld().strikeLightningEffect(player.getLocation());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        Entity damaged = event.getEntity();
+        damager.sendMessage(damaged.getName().toString());
+        if (damager instanceof Player) {
+            Player player = (Player) damager;
+            if (player.getInventory().getItemInMainHand().getItemMeta().equals(ItemManager.excalibur.getItemMeta())){
+                Random random = new Random();
+                int randomNumber = random.nextInt(100 + 1);
+                if (randomNumber <= 4){
+                    player.getWorld().createExplosion(damaged.getLocation(), 3, true, true, damager);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+
+
+        Player player = event.getPlayer();
+        Action action = event.getAction();
+        Block block = event.getClickedBlock();
+
+        if (action == Action.RIGHT_CLICK_BLOCK && block != null && block.getType() == Material.SAND) {
+            // Если игрок нажал правой кнопкой мыши на блоке песка
+            event.setCancelled(true); // Отменяем событие, чтобы предотвратить падение песка
+
+            // Создаем инвентарь магазина с предметами
+            Inventory shopInventory = player.getServer().createInventory(player, 9, "Магазин");
+
+            // Добавляем предметы в инвентарь магазина
+            ItemStack itemStack = new ItemStack(Material.DIAMOND);
+            itemStack.setAmount(5); // Устанавливаем количество как цену в изумрудах
+            shopInventory.addItem(itemStack);
+
+            // Открываем инвентарь для игрока
+            player.openInventory(shopInventory);
         }
     }
 

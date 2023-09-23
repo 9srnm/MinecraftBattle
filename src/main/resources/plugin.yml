@@ -11,6 +11,8 @@ commands:
     description: "Give you a Stormbreaker"
   give_elderwand:
     description: "Give you a Elder wand"
+  give_excalibur:
+    description: "Give you a Excalibur"
 permissions:
   battle.premission:
     description: "Allows you access /battle command"

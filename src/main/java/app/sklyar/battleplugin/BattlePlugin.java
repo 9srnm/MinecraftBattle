@@ -23,7 +23,6 @@ public final class BattlePlugin extends JavaPlugin {
         plugin = this;
         // Plugin startup logic
         ItemManager.init();
-
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         Parameters parameters = new Parameters();
         BattleCommand battleCommand = new BattleCommand(parameters, scoreboard);
@@ -34,6 +33,7 @@ public final class BattlePlugin extends JavaPlugin {
 
         getCommand("give_stormbreaker").setExecutor(new ItemsCommands());
         getCommand("give_elderwand").setExecutor(new ItemsCommands());
+        getCommand("give_excalibur").setExecutor(new ItemsCommands());
 
         getServer().getPluginManager().registerEvents(new ItemsUsageListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(scoreboard), this);
