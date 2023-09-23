@@ -123,29 +123,5 @@ public class ItemsUsageListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-
-
-        Player player = event.getPlayer();
-        Action action = event.getAction();
-        Block block = event.getClickedBlock();
-
-        if (action == Action.RIGHT_CLICK_BLOCK && block != null && block.getType() == Material.SAND) {
-            // Если игрок нажал правой кнопкой мыши на блоке песка
-            event.setCancelled(true); // Отменяем событие, чтобы предотвратить падение песка
-
-            // Создаем инвентарь магазина с предметами
-            Inventory shopInventory = player.getServer().createInventory(player, 9, "Магазин");
-
-            // Добавляем предметы в инвентарь магазина
-            ItemStack itemStack = new ItemStack(Material.DIAMOND);
-            itemStack.setAmount(5); // Устанавливаем количество как цену в изумрудах
-            shopInventory.addItem(itemStack);
-
-            // Открываем инвентарь для игрока
-            player.openInventory(shopInventory);
-        }
-    }
 
 }
