@@ -168,7 +168,7 @@ public class ItemManager {
     }
 
     private static void createCoinLvl1() {
-        ItemStack item = new ItemStack(Material.GHAST_TEAR, 64);
+        ItemStack item = new ItemStack(Material.GHAST_TEAR, 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§6CoinLvl1");
         List<String> lore = new ArrayList<>();
@@ -183,7 +183,7 @@ public class ItemManager {
     }
 
     private static void createCoinLvl2() {
-        ItemStack item = new ItemStack(Material.NETHER_STAR, 64);
+        ItemStack item = new ItemStack(Material.NETHER_STAR, 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§6CoinLvl2");
         List<String> lore = new ArrayList<>();

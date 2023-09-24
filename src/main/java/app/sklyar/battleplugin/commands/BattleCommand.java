@@ -1,24 +1,47 @@
 package app.sklyar.battleplugin.commands;
 
 import app.sklyar.battleplugin.BattlePlugin;
+import app.sklyar.battleplugin.Items.ItemManager;
 import app.sklyar.battleplugin.classes.Parameters;
+import app.sklyar.battleplugin.listeners.ChestBreakListener;
+import app.sklyar.battleplugin.listeners.ChestExplodeListener;
+import app.sklyar.battleplugin.listeners.ChestOpenListener;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-import sun.security.krb5.internal.APRep;
+import sun.jvm.hotspot.opto.Block;
+import sun.jvm.hotspot.opto.CallJavaNode;
 
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Set;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
 
 public class BattleCommand implements CommandExecutor {
 
@@ -38,7 +61,7 @@ public class BattleCommand implements CommandExecutor {
             Bukkit.getServer().getRecipe(Material.DIAMOND_SHOVEL.getKey()),
             Bukkit.getServer().getRecipe(Material.DIAMOND_SWORD.getKey())
     };
-    
+
     private final Recipe goldenAppleRecipe = Bukkit.getServer().getRecipe(Material.GOLDEN_APPLE.getKey());
     private final Recipe[] restrictedRecipes = new Recipe[]{
             Bukkit.getServer().getRecipe(Material.ENCHANTING_TABLE.getKey()),
@@ -88,7 +111,7 @@ public class BattleCommand implements CommandExecutor {
         }
     }
 
-    private void sendTitleToAll(String title, String description) {
+    private void sendTitleToAllDays(String title, String description) {
         for (Player p:
              Bukkit.getServer().getOnlinePlayers()) {
             int easeIn = 10, length = 100, easeOut = 10;
@@ -96,10 +119,30 @@ public class BattleCommand implements CommandExecutor {
 
         }
     }
-    private void sendMessageToAll(String title, String description) {
+    private void sendMessageToAllDays(String title, String description) {
         for (Player p :
                 Bukkit.getServer().getOnlinePlayers()) {
             p.sendMessage(parameters.getPrefix() + ChatColor.BOLD + ChatColor.YELLOW + title + "\n" + ChatColor.RESET + description);
+        }
+    }
+
+    private void schematics(String filename, World world, int x, int y, int z) {
+        Clipboard clipboard;
+        File file = new File(filename);
+        ClipboardFormat format = ClipboardFormats.findByFile(file);
+        try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
+            clipboard = reader.read();
+            try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+                Operation operation = new ClipboardHolder(clipboard)
+                        .createPaste(editSession)
+                        .to(BlockVector3.at(x, y, z))
+                        // configure here
+                        .build();
+                Operations.complete(operation);
+            }
+        }
+        catch (IOException | WorldEditException e) {
+            e.printStackTrace();
         }
     }
 
@@ -124,6 +167,8 @@ public class BattleCommand implements CommandExecutor {
 
                     player.getServer().resetRecipes();
                     player.getWorld().setGameRule(GameRule.DO_LIMITED_CRAFTING, false);
+
+                    player.getWorld().setGameRule(GameRule.KEEP_INVENTORY, false);
 
                     for (Player p :
                             player.getServer().getOnlinePlayers()) {
@@ -171,7 +216,10 @@ public class BattleCommand implements CommandExecutor {
                             p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
                             p.setHealth(20);
                         }
+
                         parameters.changeGameRuns(true);
+
+                        player.getWorld().setGameRule(GameRule.KEEP_INVENTORY, true);
 
                         player.getWorld().getWorldBorder().setCenter(player.getWorld().getSpawnLocation());
                         player.getWorld().getWorldBorder().setSize(parameters.getBorderLength());
@@ -209,32 +257,125 @@ public class BattleCommand implements CommandExecutor {
                                     parameters.changeGameDay(parameters.getGameDay() + 1);
                                     removeRecipes(parameters.getGameDay(), player);
 
+                                    if (parameters.getGameDay() < 6) {
+                                        int[] deltaTimeForChests = new int[4];
+                                        Arrays.fill(deltaTimeForChests, -1);
+                                        if (parameters.getGameDay() - 1 <= deltaTimeForChests.length) {
+                                            for (int i = 0; i < parameters.getGameDay() - 1; i++) {
+                                                deltaTimeForChests[i] = new Random().nextInt((int) (parameters.getDayLength() * 20 * 0.1), (int) (parameters.getDayLength() * 20 * 0.7));
+                                            }
+                                        }
+                                        int coordX = (int) player.getWorld().getSpawnLocation().getX() - (int) player.getWorld().getWorldBorder().getSize() / 2;
+                                        int coordZ = (int) player.getWorld().getSpawnLocation().getZ() - (int) player.getWorld().getWorldBorder().getSize() / 2;
+                                        final int[] iter = {-1};
+                                        for (int i = 0; i < parameters.getGameDay() - 1; i++) {
+                                            iter[0] = i;
+                                            scheduler.scheduleSyncDelayedTask(BattlePlugin.getInstance(), new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    int chestSpawnX = coordX + parameters.getBorderLength() * (iter[0] + 1) / parameters.getGameDay();
+                                                    int chestSpawnZ = coordZ + parameters.getBorderLength() * (iter[0] + 1) / parameters.getGameDay();
+                                                    player.getWorld().getHighestBlockAt(chestSpawnX, chestSpawnZ).getLocation().add(0, 1, 0).getBlock().setType(Material.CHEST);
+                                                    int chestSpawnY = player.getWorld().getHighestBlockAt(chestSpawnX, chestSpawnZ).getY();
+
+                                                    ChestBreakListener chestBreakListener = new ChestBreakListener(chestSpawnX, chestSpawnY, chestSpawnZ, parameters);
+                                                    ChestOpenListener chestOpenListener = new ChestOpenListener(chestSpawnX, chestSpawnY, chestSpawnZ, parameters);
+                                                    ChestExplodeListener chestExplodeListener = new ChestExplodeListener(chestSpawnX, chestSpawnY, chestSpawnZ);
+                                                    player.getServer().getPluginManager().registerEvents(chestBreakListener, BattlePlugin.getInstance());
+                                                    player.getServer().getPluginManager().registerEvents(chestOpenListener, BattlePlugin.getInstance());
+                                                    player.getServer().getPluginManager().registerEvents(chestExplodeListener, BattlePlugin.getInstance());
+
+                                                    final int[] taskId = new int[]{-1};
+                                                    taskId[0] = scheduler.runTaskTimer(BattlePlugin.getInstance(), new Runnable() {
+                                                        int secondsPassed = 0;
+
+                                                        @Override
+                                                        public void run() {
+                                                            if (secondsPassed >= 60 - 10 && secondsPassed < 60) {
+                                                                for (Player p :
+                                                                        player.getServer().getOnlinePlayers()) {
+                                                                    p.sendMessage(parameters.getPrefix() + ChatColor.LIGHT_PURPLE + "Таинственный сундук откроется через " + (60 - secondsPassed));
+                                                                }
+                                                            } else if (secondsPassed == 60) {
+                                                                PlayerInteractEvent.getHandlerList().unregister(chestOpenListener);
+                                                                Chest chest = (Chest) player.getWorld().getBlockAt(chestSpawnX, chestSpawnY, chestSpawnZ).getState();
+                                                                Random rand = new Random();
+                                                                int[] possibilityDistribution = new int[100];
+                                                                Arrays.fill(possibilityDistribution, 0);
+                                                                Arrays.fill(possibilityDistribution, 0, 25, 1);
+                                                                Arrays.fill(possibilityDistribution, 25, 30, 2);
+                                                                ItemStack stack;
+                                                                for (int j = 0; j < 27; j++) {
+                                                                    int item = possibilityDistribution[rand.nextInt(10)];
+                                                                    if (item == 0) {
+                                                                        continue;
+                                                                    } else if (item == 1) {
+                                                                        stack = new ItemStack(Material.EMERALD, 1);
+                                                                        chest.getInventory().setItem(j, stack);
+                                                                    } else {
+                                                                        stack = ItemManager.coinlvl1;
+                                                                        chest.getInventory().setItem(j, stack);
+                                                                    }
+                                                                }
+                                                                for (Player p :
+                                                                        player.getServer().getOnlinePlayers()) {
+                                                                    p.sendMessage(parameters.getPrefix() + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "Таинственный сундук открыт!");
+                                                                }
+                                                            } else if (secondsPassed > 60) {
+                                                                scheduler.cancelTask(taskId[0]);
+                                                                scheduler.scheduleSyncDelayedTask(BattlePlugin.getInstance(), new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        BlockBreakEvent.getHandlerList().unregister(chestBreakListener);
+                                                                        BlockExplodeEvent.getHandlerList().unregister(chestExplodeListener);
+                                                                        player.getWorld().getBlockAt(chestSpawnX, chestSpawnY, chestSpawnZ).setType(Material.AIR);
+                                                                        for (Player p :
+                                                                                player.getServer().getOnlinePlayers()) {
+                                                                            p.sendMessage(parameters.getPrefix() + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "Таинственный сундук убран!");
+                                                                        }
+                                                                    }
+                                                                }, 20 * 60);
+                                                            } else if (secondsPassed % 12 == 0) {
+                                                                for (Player p :
+                                                                        player.getServer().getOnlinePlayers()) {
+                                                                    p.sendMessage(parameters.getPrefix() + ChatColor.BOLD + ChatColor.DARK_RED + "Таинственный сундук " + ChatColor.RESET + ChatColor.LIGHT_PURPLE + "откроется через " + ChatColor.BOLD + ChatColor.DARK_RED + (5 - secondsPassed / 60) + " мин. " + ChatColor.RESET + ChatColor.LIGHT_PURPLE + "по координатам: " + ChatColor.BOLD + ChatColor.DARK_RED + chestSpawnX + " " + chestSpawnY + " " + chestSpawnZ);
+                                                                }
+                                                            }
+                                                            secondsPassed++;
+                                                        }
+                                                    }, 0, 20).getTaskId();
+
+                                                }
+                                            }, deltaTimeForChests[i]);
+                                        }
+                                    }
+
                                     if (parameters.getGameDay() < 7) player.playSound(player, Sound.ENTITY_WITHER_DEATH, 1, 1);
 
                                     switch (parameters.getGameDay()) {
                                         case 1:
-                                            sendTitleToAll("НАЧАЛО ИГРЫ", "Ищите изумруды и прокачивайте базу");
-                                            sendMessageToAll("НАЧАЛО ИГРЫ", "Ищите изумруды и прокачивайте базу. Она даст вам эффекты и монеты для покупки интересных вещей на центре. Пока что заходить на территорию соперника нельзя");
+                                            sendTitleToAllDays("НАЧАЛО ИГРЫ", "Ищите изумруды и прокачивайте базу");
+                                            sendMessageToAllDays("НАЧАЛО ИГРЫ", "Ищите изумруды и прокачивайте базу. Она даст вам эффекты и монеты для покупки интересных вещей на центре. Пока что заходить на территорию соперника нельзя");
                                             break;
                                         case 2:
-                                            sendTitleToAll("АЛМАЗНЫЕ ПРЕДМЕТЫ", "Теперь вы можете крафтить алмазные предметы");
-                                            sendMessageToAll("АЛМАЗНЫЕ ПРЕДМЕТЫ И ОТКРЫТИЕ ГРАНИЦ", "Теперь вы можете крафтить алмазные предметы и забегать на территорию соперника, чтобы забрать флаг, тем самым ограничив жизнь соперников до одной");
+                                            sendTitleToAllDays("АЛМАЗНЫЕ ПРЕДМЕТЫ", "Теперь вы можете крафтить алмазные предметы");
+                                            sendMessageToAllDays("АЛМАЗНЫЕ ПРЕДМЕТЫ И ОТКРЫТИЕ ГРАНИЦ", "Теперь вы можете крафтить алмазные предметы и забегать на территорию соперника, чтобы забрать флаг, тем самым ограничив жизнь соперников до одной");
                                             break;
                                         case 3:
-                                            sendTitleToAll("ПОДСВЕТКА БАЗЫ", "База теперь подсвечивается");
-                                            sendMessageToAll("ЭФФЕКТЫ НА ЧУЖОЙ ПОЛОВИНЕ И ПОДСВЕТКА БАЗЫ", "Теперь эффекты, которые вы получили от базы будут действовать на половине соперника. База теперь подсвечивается");
+                                            sendTitleToAllDays("ПОДСВЕТКА БАЗЫ", "База теперь подсвечивается");
+                                            sendMessageToAllDays("ЭФФЕКТЫ НА ЧУЖОЙ ПОЛОВИНЕ И ПОДСВЕТКА БАЗЫ", "Теперь эффекты, которые вы получили от базы будут действовать на половине соперника. База теперь подсвечивается");
                                             break;
                                         case 4:
-                                            sendTitleToAll("ЗОЛОТЫЕ ЯБЛОКИ", "Можно крафтить золотые яблоки");
-                                            sendMessageToAll("ЗОЛОТЫЕ ЯБЛОКИ", "Не хватает ПВП? Скрафти золотые яблоки и вступай в бой");
+                                            sendTitleToAllDays("ЗОЛОТЫЕ ЯБЛОКИ", "Можно крафтить золотые яблоки");
+                                            sendMessageToAllDays("ЗОЛОТЫЕ ЯБЛОКИ", "Не хватает ПВП? Скрафти золотые яблоки и вступай в бой");
                                             break;
                                         case 5:
-                                            sendTitleToAll("ЗАЧАРОВАНИЯ", "Теперь на центре можно зачаровать свои предметы");
-                                            sendMessageToAll("ЗАЧАРОВАНИЯ", "Теперь на центре можно зачаровать свои предметы");
+                                            sendTitleToAllDays("ЗАЧАРОВАНИЯ", "Теперь на центре можно зачаровать свои предметы");
+                                            sendMessageToAllDays("ЗАЧАРОВАНИЯ", "Теперь на центре можно зачаровать свои предметы");
                                             break;
                                         case 6:
-                                            sendTitleToAll("LE FIN!", "Зона сужается! У всех одна жизнь");
-                                            sendMessageToAll("LE FIN!", "Вот и финал! Зона сужается (да-да фортнайтеры, про вас не забыли)! У всех одна жизнь! Кто кого?");
+                                            sendTitleToAllDays("LE FIN!", "Зона сужается! У всех одна жизнь");
+                                            sendMessageToAllDays("LE FIN!", "Вот и финал! Зона сужается (да-да фортнайтеры, про вас не забыли)! У всех одна жизнь! Кто кого?");
                                             player.getWorld().getWorldBorder().setSize(1, parameters.getBorderShrinkTime());
                                             break;
                                     }

@@ -7,14 +7,13 @@ import app.sklyar.battleplugin.commands.ItemsCommands;
 import app.sklyar.battleplugin.commands.TestCommands;
 import app.sklyar.battleplugin.listeners.*;
 import app.sklyar.battleplugin.listeners.BlocksUsageListener;
-import app.sklyar.battleplugin.listeners.*;
+
 import app.sklyar.battleplugin.tabCompletion.BattleTabCompletion;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.Bukkit;
-import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +62,7 @@ public final class BattlePlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerDamageListener(scoreboard, parameters), this);
 
-        getServer().getPluginManager().registerEvents(new BlockBreakListener(parameters), this);
+        getServer().getPluginManager().registerEvents(new SpawnBlockPlaceListener(parameters), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(parameters, scoreboard), this);
         getServer().getPluginManager().registerEvents(new EnchantmentTableEvent(parameters), this);
     }
