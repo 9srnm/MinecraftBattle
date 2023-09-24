@@ -59,7 +59,8 @@ public class ItemsUsageListener implements Listener {
                                 double dis2 = target.getLocation().distance(block.getLocation());
                                 double dis3 = player.getLocation().distance(block.getLocation());
                                 if (dis1 + dis2 - dis3 <= 0.3){
-                                    target.setHealth(0);
+                                    target.damage(target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), player);
+                                    player.getWorld().strikeLightningEffect(target.getLocation());
                                     break;
                                 }
                             }

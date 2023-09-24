@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.Bukkit;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,12 +33,11 @@ public final class BattlePlugin extends JavaPlugin {
 
         List<Entity> lst = new ArrayList<>();
         HashMap<ItemStack, Integer> shopItemsLvl2 = new HashMap<ItemStack, Integer>() {{
-            put(ItemManager.excalibur, 3);
             put(ItemManager.robinsbow, 2);
         }};
         HashMap<ItemStack, Integer> shopItemsLvl1 = new HashMap<ItemStack, Integer>() {{
-            put(ItemManager.elderwand, 2);
             put(ItemManager.healthhealer, 1);
+            put(ItemManager.compassoftruth, 1);
         }};
         // Plugin startup logic
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();

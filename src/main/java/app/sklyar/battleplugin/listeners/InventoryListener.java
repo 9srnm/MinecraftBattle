@@ -1,13 +1,13 @@
 package app.sklyar.battleplugin.listeners;
 
+import app.sklyar.battleplugin.BattlePlugin;
 import app.sklyar.battleplugin.Items.ItemManager;
 import app.sklyar.battleplugin.classes.Parameters;
 import app.sklyar.battleplugin.inventories.ShopInventory;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,6 +16,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scoreboard.Team;
 
 import java.nio.channels.SelectableChannel;
 import java.util.ArrayList;
@@ -58,6 +61,11 @@ public class InventoryListener implements Listener {
                         if (item.getType() == Material.ENCHANTED_GOLDEN_APPLE){
                             double playerMaxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
                             if (playerMaxHealth <= 18) { player.setMaxHealth(playerMaxHealth + 2); }
+                        }
+                        else if (item.getType() == Material.COMPASS){
+                            BukkitScheduler scheduler = Bukkit.getScheduler();
+                            scheduler.runTaskTimer(BattlePlugin.getInstance(), CompassUpdater(player), 0, 20);
+                            player.getInventory().addItem(item);
                         }
                         else{ player.getInventory().addItem(item); }
                         ItemStack[] inventory = player.getInventory().getContents();
@@ -106,5 +114,37 @@ public class InventoryListener implements Listener {
                 }
             }
         }
+    }
+
+    private Runnable CompassUpdater (Player player) {
+
+        return () -> {
+            Player target = findNearestPlayer(player);
+            if (target != null) {
+                Location targetLocation = target.getLocation();
+                player.setCompassTarget(targetLocation);
+            }
+        };
+    }
+
+    @Deprecated
+    private Player findNearestPlayer(Player player) {
+        Player nearest = null;
+        double nearestDistance = Double.MAX_VALUE;
+        Location loc1 = player.getLocation();
+
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (onlinePlayer.getScoreboard().getPlayerTeam(onlinePlayer) == null || player.getScoreboard().getPlayerTeam(onlinePlayer) == null) { break; }
+            if (!(player.getScoreboard().getPlayerTeam(player).equals(onlinePlayer.getScoreboard().getPlayerTeam(onlinePlayer)))) {
+                Location loc2 = onlinePlayer.getLocation();
+                double distance = loc1.distance(loc2);
+                if (distance < nearestDistance) {
+                    nearest = onlinePlayer;
+                    nearestDistance = distance;
+                }
+            }
+        }
+
+        return nearest;
     }
 }

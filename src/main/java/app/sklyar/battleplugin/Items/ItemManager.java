@@ -28,6 +28,7 @@ public class ItemManager {
     public static ItemStack coinlvl2;
     public static ItemStack healthhealer;
     public static ItemStack robinsbow;
+    public static ItemStack compassoftruth;
 
 
     public static void init() {
@@ -41,6 +42,7 @@ public class ItemManager {
         createCoinLvl2();
         createHealthHealer();
         createRobinsBow();
+        createCompassOfTruth();
     }
 
     private static void createStormbreaker() {
@@ -49,6 +51,7 @@ public class ItemManager {
         meta.setDisplayName("§6Stormbreaker");
         List<String> lore = new ArrayList<>();
         lore.add("§7The Thunder God's Greatest Weapon");
+        lore.add("§6Right-click to raise lightnings");
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.setUnbreakable(true);
@@ -74,6 +77,8 @@ public class ItemManager {
         meta.setDisplayName("§6Elder Wand");
         List<String> lore = new ArrayList<>();
         lore.add("§7The most powerful magic wand");
+        lore.add("§6Right-click to Avada Kedavra");
+        lore.add("§6Left-click to teleport");
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.addEnchant(Enchantment.LUCK, 1, false);
@@ -150,6 +155,7 @@ public class ItemManager {
         List<String> lore = new ArrayList<>();
         lore.add("§2 The mythical sword of King Arthur");
         lore.add("§2 that may be attributed with magical powers");
+        lore.add("§6Right-click to raise explosions");
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.setUnbreakable(true);
@@ -221,5 +227,20 @@ public class ItemManager {
         meta.addEnchant(Enchantment.ARROW_KNOCKBACK, 1, false);
         item.setItemMeta(meta);
         robinsbow = item;
+    }
+
+    private static void createCompassOfTruth() {
+        ItemStack item = new ItemStack(Material.COMPASS, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6Compass_of_Truth");
+        List<String> lore = new ArrayList<>();
+        lore.add("§2Compass will target");
+        lore.add("§2you nearest enemy");
+        meta.setLore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.LUCK, 2, false);
+        item.setItemMeta(meta);
+        compassoftruth = item;
     }
 }
