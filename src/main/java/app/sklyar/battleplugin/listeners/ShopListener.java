@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class InventoryListener implements Listener {
+public class ShopListener implements Listener {
 
     private final HashMap<ItemStack, Integer> shopItemsLvl2;
     private final HashMap<ItemStack, Integer> shopItemsLvl1;
-    public InventoryListener(HashMap<ItemStack, Integer> shopItemsLvl1, HashMap<ItemStack, Integer> shopItemsLvl2) {
+    public ShopListener(HashMap<ItemStack, Integer> shopItemsLvl1, HashMap<ItemStack, Integer> shopItemsLvl2) {
         this.shopItemsLvl1 = shopItemsLvl1;
         this.shopItemsLvl2 = shopItemsLvl2;
     }
