@@ -2,7 +2,9 @@ package app.sklyar.battleplugin.commands;
 
 import app.sklyar.battleplugin.BattlePlugin;
 import app.sklyar.battleplugin.Items.ItemManager;
+import app.sklyar.battleplugin.classes.Base;
 import app.sklyar.battleplugin.classes.Parameters;
+import app.sklyar.battleplugin.inventories.BaseInventory;
 import app.sklyar.battleplugin.listeners.ChestBreakListener;
 import app.sklyar.battleplugin.listeners.ChestExplodeListener;
 import app.sklyar.battleplugin.listeners.ChestOpenListener;
@@ -67,17 +69,21 @@ public class BattleCommand implements CommandExecutor {
             Bukkit.getServer().getRecipe(Material.ENCHANTING_TABLE.getKey()),
             Bukkit.getServer().getRecipe(Material.BREWING_STAND.getKey()),
             Bukkit.getServer().getRecipe(Material.BLAZE_POWDER.getKey()),
-            Bukkit.getServer().getRecipe(Material.BEACON.getKey())
+            Bukkit.getServer().getRecipe(Material.BEACON.getKey()),
+            Bukkit.getServer().getRecipe(Material.RED_BANNER.getKey()),
     };
 
-    public BattleCommand(Parameters p, Scoreboard s) {
+    private final List<Base> baseList;
+
+    public BattleCommand(Parameters p, Scoreboard s, List<Base> bl) {
         parameters = p;
         scoreboard = s;
         cleanTeams(s);
+        baseList = bl;
     }
 
-    private void cleanTeams(Scoreboard scoreboard){
-        for(Team team: scoreboard.getTeams()){
+    private void cleanTeams(Scoreboard scoreboard) {
+        for (Team team : scoreboard.getTeams()) {
             team.unregister();
         }
     }
@@ -88,8 +94,8 @@ public class BattleCommand implements CommandExecutor {
         player.setScoreboard(scoreboard);
     }
 
-    private void removePlayerFromTeams(Player player){
-        for(Team team : scoreboard.getTeams()){
+    private void removePlayerFromTeams(Player player) {
+        for (Team team : scoreboard.getTeams()) {
             team.removePlayer(player);
         }
     }
@@ -112,37 +118,18 @@ public class BattleCommand implements CommandExecutor {
     }
 
     private void sendTitleToAllDays(String title, String description) {
-        for (Player p:
-             Bukkit.getServer().getOnlinePlayers()) {
+        for (Player p :
+                Bukkit.getServer().getOnlinePlayers()) {
             int easeIn = 10, length = 100, easeOut = 10;
             p.sendTitle("" + ChatColor.BOLD + ChatColor.YELLOW + title, description, easeIn, length, easeOut);
 
         }
     }
+
     private void sendMessageToAllDays(String title, String description) {
         for (Player p :
                 Bukkit.getServer().getOnlinePlayers()) {
             p.sendMessage(parameters.getPrefix() + ChatColor.BOLD + ChatColor.YELLOW + title + "\n" + ChatColor.RESET + description);
-        }
-    }
-
-    private void schematics(String filename, World world, int x, int y, int z) {
-        Clipboard clipboard;
-        File file = new File(filename);
-        ClipboardFormat format = ClipboardFormats.findByFile(file);
-        try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
-            clipboard = reader.read();
-            try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
-                Operation operation = new ClipboardHolder(clipboard)
-                        .createPaste(editSession)
-                        .to(BlockVector3.at(x, y, z))
-                        // configure here
-                        .build();
-                Operations.complete(operation);
-            }
-        }
-        catch (IOException | WorldEditException e) {
-            e.printStackTrace();
         }
     }
 
@@ -178,14 +165,12 @@ public class BattleCommand implements CommandExecutor {
                     }
 
                     player.sendMessage(parameters.getPrefix() + ChatColor.GREEN + "Battle has been finished");
-                }
-                else if (parameters.getGameRuns()) {
+                } else if (parameters.getGameRuns()) {
                     player.sendMessage(parameters.getPrefix() + ChatColor.RED + "You can't run this command while the Battle is ongoing");
-                }
-                else if (secondaryCommand.equalsIgnoreCase("start")) {
+                } else if (secondaryCommand.equalsIgnoreCase("start")) {
                     boolean allInTeams = true;
-                    for (Player p:
-                         Bukkit.getServer().getOnlinePlayers()) {
+                    for (Player p :
+                            Bukkit.getServer().getOnlinePlayers()) {
                         if (scoreboard.getPlayerTeam(p) == null) {
                             allInTeams = false;
                             break;
@@ -193,11 +178,11 @@ public class BattleCommand implements CommandExecutor {
                     }
                     System.out.println(allInTeams);
                     boolean allTeamsHavePlayer = true;
-                    for (Team team:
-                        scoreboard.getTeams()) {
+                    for (Team team :
+                            scoreboard.getTeams()) {
                         boolean hasPlayerOnline = false;
-                        for (String pString:
-                            team.getEntries()) {
+                        for (String pString :
+                                team.getEntries()) {
                             Player p = Bukkit.getServer().getPlayer(pString);
                             if (p != null && p.isOnline()) {
                                 hasPlayerOnline = true;
@@ -219,6 +204,16 @@ public class BattleCommand implements CommandExecutor {
 
                         parameters.changeGameRuns(true);
 
+                        Random rand = new Random();
+                        for (Team team :
+                                player.getScoreboard().getTeams()) {
+                            int i = rand.nextInt(team.getSize());
+                            String[] teamNicks = new String[team.getSize()];
+                            team.getEntries().toArray(teamNicks);
+                            Player p = Bukkit.getPlayer(teamNicks[i]);
+                            p.getInventory().addItem(ItemManager.base);
+                        }
+
                         player.getWorld().setGameRule(GameRule.KEEP_INVENTORY, true);
 
                         player.getWorld().getWorldBorder().setCenter(player.getWorld().getSpawnLocation());
@@ -235,11 +230,13 @@ public class BattleCommand implements CommandExecutor {
                             Location spawn = player.getWorld().getSpawnLocation();
                             int coordinateX = (int) spawn.getX() - (int) player.getWorld().getWorldBorder().getSize() / 2 + parameters.getBorderLength() * xSector / xLength + parameters.getBorderLength() / (2 * xLength);
                             int coordinateZ = (int) spawn.getZ() - (int) player.getWorld().getWorldBorder().getSize() / 2 + parameters.getBorderLength() * zSector / zLength + parameters.getBorderLength() / (2 * zLength);
-                            for (String pString:
-                                 teams[i].getEntries()) {
+                            for (String pString :
+                                    teams[i].getEntries()) {
                                 Player p = Bukkit.getServer().getPlayer(pString);
-                                if (p != null) p.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().add(0, 1, 0));
-                            };
+                                if (p != null)
+                                    p.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().add(0, 1, 0));
+                            }
+                            ;
                         }
 
                         player.getWorld().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -291,12 +288,12 @@ public class BattleCommand implements CommandExecutor {
 
                                                         @Override
                                                         public void run() {
-                                                            if (secondsPassed >= 60 - 10 && secondsPassed < 60) {
+                                                            if (secondsPassed >= 60 * 5 - 10 && secondsPassed < 60 * 5) {
                                                                 for (Player p :
                                                                         player.getServer().getOnlinePlayers()) {
-                                                                    p.sendMessage(parameters.getPrefix() + ChatColor.LIGHT_PURPLE + "Таинственный сундук откроется через " + (60 - secondsPassed));
+                                                                    p.sendMessage(parameters.getPrefix() + ChatColor.LIGHT_PURPLE + "Таинственный сундук откроется через " + (60 * 5 - secondsPassed) + " сек.");
                                                                 }
-                                                            } else if (secondsPassed == 60) {
+                                                            } else if (secondsPassed == 60 * 5) {
                                                                 PlayerInteractEvent.getHandlerList().unregister(chestOpenListener);
                                                                 Chest chest = (Chest) player.getWorld().getBlockAt(chestSpawnX, chestSpawnY, chestSpawnZ).getState();
                                                                 Random rand = new Random();
@@ -321,7 +318,7 @@ public class BattleCommand implements CommandExecutor {
                                                                         player.getServer().getOnlinePlayers()) {
                                                                     p.sendMessage(parameters.getPrefix() + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "Таинственный сундук открыт!");
                                                                 }
-                                                            } else if (secondsPassed > 60) {
+                                                            } else if (secondsPassed > 60 * 5) {
                                                                 scheduler.cancelTask(taskId[0]);
                                                                 scheduler.scheduleSyncDelayedTask(BattlePlugin.getInstance(), new Runnable() {
                                                                     @Override
@@ -335,7 +332,7 @@ public class BattleCommand implements CommandExecutor {
                                                                         }
                                                                     }
                                                                 }, 20 * 60);
-                                                            } else if (secondsPassed % 12 == 0) {
+                                                            } else if (secondsPassed % 60 == 0) {
                                                                 for (Player p :
                                                                         player.getServer().getOnlinePlayers()) {
                                                                     p.sendMessage(parameters.getPrefix() + ChatColor.BOLD + ChatColor.DARK_RED + "Таинственный сундук " + ChatColor.RESET + ChatColor.LIGHT_PURPLE + "откроется через " + ChatColor.BOLD + ChatColor.DARK_RED + (5 - secondsPassed / 60) + " мин. " + ChatColor.RESET + ChatColor.LIGHT_PURPLE + "по координатам: " + ChatColor.BOLD + ChatColor.DARK_RED + chestSpawnX + " " + chestSpawnY + " " + chestSpawnZ);
@@ -350,12 +347,13 @@ public class BattleCommand implements CommandExecutor {
                                         }
                                     }
 
-                                    if (parameters.getGameDay() < 7) player.playSound(player, Sound.ENTITY_WITHER_DEATH, 1, 1);
+                                    if (parameters.getGameDay() < 7)
+                                        player.playSound(player, Sound.ENTITY_WITHER_DEATH, 1, 1);
 
                                     switch (parameters.getGameDay()) {
                                         case 1:
                                             sendTitleToAllDays("НАЧАЛО ИГРЫ", "Ищите изумруды и прокачивайте базу");
-                                            sendMessageToAllDays("НАЧАЛО ИГРЫ", "Ищите изумруды и прокачивайте базу. Она даст вам эффекты и монеты для покупки интересных вещей на центре. Пока что заходить на территорию соперника нельзя");
+                                            sendMessageToAllDays("НАЧАЛО ИГРЫ", "Установите базу. Ищите изумруды и прокачивайте её. Она даст вам эффекты и монеты для покупки интересных вещей на центре. Пока что заходить на территорию соперника нельзя");
                                             break;
                                         case 2:
                                             sendTitleToAllDays("АЛМАЗНЫЕ ПРЕДМЕТЫ", "Теперь вы можете крафтить алмазные предметы");
@@ -390,10 +388,9 @@ public class BattleCommand implements CommandExecutor {
                                 player.getWorld().setTime(player.getWorld().getTime() + speed);
                             }
                         }, 0, 20);
-                    }
-                    else player.sendMessage(parameters.getPrefix() + ChatColor.RED + "Every person online should be in a team and every team should include at least one person online");
-                }
-                else if (secondaryCommand.equalsIgnoreCase("teams")) {
+                    } else
+                        player.sendMessage(parameters.getPrefix() + ChatColor.RED + "Every person online should be in a team and every team should include at least one person online");
+                } else if (secondaryCommand.equalsIgnoreCase("teams")) {
                     if (args.length > 1) {
                         String teamAction = args[1];
                         if (teamAction.equalsIgnoreCase("addTeam")) {
@@ -401,8 +398,7 @@ public class BattleCommand implements CommandExecutor {
                                 String teamName = args[2];
                                 if (scoreboard.getTeam(teamName) != null) {
                                     player.sendMessage(parameters.getPrefix() + ChatColor.YELLOW + "Team already exists");
-                                }
-                                else {
+                                } else {
                                     scoreboard.registerNewTeam(teamName);
                                     Team team = scoreboard.getTeam(teamName);
                                     team.setAllowFriendlyFire(false);
@@ -410,40 +406,34 @@ public class BattleCommand implements CommandExecutor {
                                     player.sendMessage(parameters.getPrefix() + ChatColor.GREEN + "Team " + ChatColor.BOLD + teamName + ChatColor.RESET + ChatColor.GREEN + " added");
                                 }
                             } else isPromptCorrect = false;
-                        }
-                        else if (teamAction.equalsIgnoreCase("delTeam")) {
+                        } else if (teamAction.equalsIgnoreCase("delTeam")) {
                             if (args.length > 2) {
                                 String teamName = args[2];
                                 if (scoreboard.getTeam(teamName) == null) {
                                     player.sendMessage(parameters.getPrefix() + ChatColor.YELLOW + "Team does not exist");
-                                }
-                                else {
+                                } else {
                                     scoreboard.getTeam(teamName).unregister();
                                     player.sendMessage(parameters.getPrefix() + ChatColor.GREEN + "Team " + ChatColor.BOLD + teamName + ChatColor.RESET + ChatColor.GREEN + " has been deleted");
                                 }
                             } else isPromptCorrect = false;
-                        }
-                        else if (teamAction.equalsIgnoreCase("addPlayer")) {
+                        } else if (teamAction.equalsIgnoreCase("addPlayer")) {
                             if (args.length > 3) {
                                 String playerName = args[2];
                                 String teamName = args[3];
                                 if (scoreboard.getTeam(teamName) == null) {
                                     player.sendMessage(parameters.getPrefix() + ChatColor.YELLOW + "Team does not exist");
-                                }
-                                else {
+                                } else {
                                     Team team = scoreboard.getTeam(teamName);
                                     Player target = Bukkit.getPlayerExact(playerName);
                                     if (target != null) {
                                         addToTeam(target, team);
                                         player.sendMessage(parameters.getPrefix() + ChatColor.GREEN + "Player " + ChatColor.BOLD + playerName + ChatColor.RESET + ChatColor.GREEN + " was added to team " + ChatColor.BOLD + teamName);
-                                    }
-                                    else {
+                                    } else {
                                         player.sendMessage(parameters.getPrefix() + ChatColor.YELLOW + "Player does not exist ");
                                     }
                                 }
                             } else isPromptCorrect = false;
-                        }
-                        else if (teamAction.equalsIgnoreCase("delPlayer")) {
+                        } else if (teamAction.equalsIgnoreCase("delPlayer")) {
                             if (args.length > 2) {
                                 String playerName = args[2];
                                 Player target = Bukkit.getPlayerExact(playerName);
@@ -452,21 +442,17 @@ public class BattleCommand implements CommandExecutor {
                                 }
                                 if (target.getScoreboard().getPlayerTeam(target) == null) {
                                     player.sendMessage(parameters.getPrefix() + ChatColor.YELLOW + "Player is not in any team");
-                                }
-                                else {
+                                } else {
                                     String team = target.getScoreboard().getPlayerTeam(target).getName();
                                     removePlayerFromTeams(target);
                                     player.sendMessage(parameters.getPrefix() + ChatColor.GREEN + "Player " + ChatColor.BOLD + playerName + ChatColor.RESET + ChatColor.GREEN + " was removed from team " + ChatColor.BOLD + team);
                                 }
                             } else isPromptCorrect = false;
-                        }
-                        else isPromptCorrect = false;
-                    }
-                    else {
+                        } else isPromptCorrect = false;
+                    } else {
                         if (scoreboard.getTeams().isEmpty()) {
                             player.sendMessage(parameters.getPrefix() + ChatColor.YELLOW + "There are no teams yet");
-                        }
-                        else {
+                        } else {
                             StringBuilder message = new StringBuilder(parameters.getPrefix() + ChatColor.GREEN + "List of teams: \n" + ChatColor.RESET);
                             for (Team team : scoreboard.getTeams()) {
                                 message.append(ChatColor.BOLD).append(team.getName()).append(": ");
@@ -483,8 +469,7 @@ public class BattleCommand implements CommandExecutor {
                             player.sendMessage(message.toString());
                         }
                     }
-                }
-                else if (secondaryCommand.equalsIgnoreCase("setSpawnRadius")) {
+                } else if (secondaryCommand.equalsIgnoreCase("setSpawnRadius")) {
                     if (args.length > 1) {
                         try {
                             int value = Integer.parseInt(args[1]);
@@ -494,8 +479,7 @@ public class BattleCommand implements CommandExecutor {
                             player.sendMessage(parameters.getPrefix() + ChatColor.RED + "This is not an integer");
                         }
                     }
-                }
-                else if (secondaryCommand.equalsIgnoreCase("setDayLength")) {
+                } else if (secondaryCommand.equalsIgnoreCase("setDayLength")) {
                     if (args.length > 1) {
                         try {
                             int value = Integer.parseInt(args[1]);
@@ -505,8 +489,7 @@ public class BattleCommand implements CommandExecutor {
                             player.sendMessage(parameters.getPrefix() + ChatColor.RED + "This is not an integer");
                         }
                     }
-                }
-                else if (secondaryCommand.equalsIgnoreCase("setNightLength")) {
+                } else if (secondaryCommand.equalsIgnoreCase("setNightLength")) {
                     if (args.length > 1) {
                         try {
                             int value = Integer.parseInt(args[1]);
@@ -516,8 +499,7 @@ public class BattleCommand implements CommandExecutor {
                             player.sendMessage(parameters.getPrefix() + ChatColor.RED + "This is not an integer");
                         }
                     }
-                }
-                else if (secondaryCommand.equalsIgnoreCase("setBorderLength")) {
+                } else if (secondaryCommand.equalsIgnoreCase("setBorderLength")) {
                     if (args.length > 1) {
                         try {
                             int value = Integer.parseInt(args[1]);
@@ -527,8 +509,7 @@ public class BattleCommand implements CommandExecutor {
                             player.sendMessage(parameters.getPrefix() + ChatColor.RED + "This is not an integer");
                         }
                     }
-                }
-                else if (secondaryCommand.equalsIgnoreCase("setBorderShrinkTime")) {
+                } else if (secondaryCommand.equalsIgnoreCase("setBorderShrinkTime")) {
                     if (args.length > 1) {
                         try {
                             int value = Integer.parseInt(args[1]);
@@ -538,16 +519,31 @@ public class BattleCommand implements CommandExecutor {
                             player.sendMessage(parameters.getPrefix() + ChatColor.RED + "This is not an integer");
                         }
                     }
-                }
-                else {
+                } else {
                     player.sendMessage(parameters.getPrefix() + ChatColor.RED + "Unknown command: " + ChatColor.BOLD + secondaryCommand);
                 }
-            }
-            else {
-                isPromptCorrect = false;
-            }
-            if (!isPromptCorrect) {
-                player.sendMessage(parameters.getPrefix() + ChatColor.YELLOW + "Type " + ChatColor.BOLD + "/help battle" + ChatColor.RESET + ChatColor.YELLOW + " to see how to use battle command");
+            } else {
+                if (parameters.getGameRuns()) {
+                    Base playerBase = null;
+                    for (Base base :
+                            baseList) {
+                        if (base.name.equals(player.getScoreboard().getPlayerTeam(player).getName())) {
+                            playerBase = base;
+                            break;
+                        }
+                    }
+                    if (playerBase != null) {
+                        if (player.getLocation().distance(playerBase.loc) <= 32) {
+                            player.openInventory(new BaseInventory().getInventory());
+                        } else
+                            player.sendMessage(parameters.getPrefix() + ChatColor.RED + "You are too far from your base (>32 blocks)");
+                    } else
+                        player.sendMessage(parameters.getPrefix() + ChatColor.RED + "Your team hasn't placed the flag");
+                }
+                else isPromptCorrect = false;
+                if (!isPromptCorrect) {
+                    player.sendMessage(parameters.getPrefix() + ChatColor.YELLOW + "Type " + ChatColor.BOLD + "/help battle" + ChatColor.RESET + ChatColor.YELLOW + " to see how to use battle command");
+                }
             }
         }
         return true;

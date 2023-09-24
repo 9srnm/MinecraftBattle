@@ -23,24 +23,8 @@ public class Base {
     }
 
 
-    public void LvlUp(){
-        baseLvl += 1;
-        if (baseLvl == 2){
-
-        }
-        else if (baseLvl == 3){
-
-        }
-        else if (baseLvl == 4){
-
-        }
-        else if (baseLvl == 5){
-
-        }
-    }
-
-    public void LvlDown(){
-        baseLvl -= 1;
+    public void setLvl(int lvl) {
+        this.baseLvl = lvl;
     }
 
 

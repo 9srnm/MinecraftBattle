@@ -10,12 +10,28 @@ import app.sklyar.battleplugin.listeners.*;
 import app.sklyar.battleplugin.listeners.BlocksUsageListener;
 
 import app.sklyar.battleplugin.tabCompletion.BattleTabCompletion;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.session.ClipboardHolder;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.Bukkit;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +41,26 @@ public final class BattlePlugin extends JavaPlugin {
 
     public static BattlePlugin getInstance() {
         return plugin;
+    }
+
+    public void schematics(String filename, World world, int x, int y, int z) {
+        Clipboard clipboard;
+        File file = new File(filename);
+        ClipboardFormat format = ClipboardFormats.findByFile(file);
+        try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
+            clipboard = reader.read();
+            try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+                Operation operation = new ClipboardHolder(clipboard)
+                        .createPaste(editSession)
+                        .to(BlockVector3.at(x, y, z))
+                        // configure here
+                        .build();
+                Operations.complete(operation);
+            }
+        }
+        catch (IOException | WorldEditException e) {
+            e.printStackTrace();
+        }
     }
     @Override
     public void onEnable() {
@@ -45,7 +81,7 @@ public final class BattlePlugin extends JavaPlugin {
         // Plugin startup logic
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         Parameters parameters = new Parameters();
-        BattleCommand battleCommand = new BattleCommand(parameters, scoreboard);
+        BattleCommand battleCommand = new BattleCommand(parameters, scoreboard, baseList);
         BattleTabCompletion battleTabCompletion = new BattleTabCompletion(scoreboard);
 
         getCommand("battle").setExecutor(battleCommand);
@@ -62,8 +98,8 @@ public final class BattlePlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlocksUsageListener(shopItemsLvl1, shopItemsLvl2), this);
         getServer().getPluginManager().registerEvents(new EntityDeathListener(lst), this);
         getServer().getPluginManager().registerEvents(new TrapBreakListener(lst), this);
-        getServer().getPluginManager().registerEvents(new BaseInventoryListener(baseList), this);
-        getServer().getPluginManager().registerEvents(new BaseUsageListener(baseList), this);
+        getServer().getPluginManager().registerEvents(new BaseInventoryListener(baseList, parameters), this);
+        getServer().getPluginManager().registerEvents(new BaseUsageListener(baseList, parameters), this);
 
         getServer().getPluginManager().registerEvents(new PlayerDamageListener(scoreboard, parameters), this);
 
