@@ -38,13 +38,5 @@ public class BlocksUsageListener implements Listener {
                 event.setCancelled(true);
             }
         }
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.END_STONE) {
-                BaseInventory gui = new BaseInventory();
-                player.openInventory(gui.getInventory());
-                event.setCancelled(true);
-            }
-        }
     }
-
 }

@@ -1,17 +1,27 @@
 package app.sklyar.battleplugin.listeners;
 
+import app.sklyar.battleplugin.BattlePlugin;
+import app.sklyar.battleplugin.Items.ItemManager;
 import app.sklyar.battleplugin.classes.Base;
+import app.sklyar.battleplugin.classes.Parameters;
 import app.sklyar.battleplugin.inventories.ShopInventory;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.AbstractVillager;
+import org.bukkit.entity.Marker;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,54 +31,92 @@ import java.util.List;
 public class BaseUsageListener implements Listener {
 
     private final List<Base> baseList;
-    public BaseUsageListener(List<Base> baseList) {
+    private final Parameters parameters;
+
+    public BaseUsageListener(List<Base> baseList, Parameters parameters) {
         this.baseList = baseList;
+        this.parameters = parameters;
     }
 
 
     @EventHandler
     @Deprecated
-    public void storeUsage(PlayerInteractEvent event){
-        Player player = event.getPlayer();
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.END_PORTAL_FRAME) {
-                event.setCancelled(true);
-                Base playersBase = null;
-                for(Base target : baseList) {
-                    if(target.name == player.getScoreboard().getPlayerTeam(player).getName()){
-                        playersBase = target;
+    public void storeUsage(PlayerInteractEvent event) {
+        if (parameters.getGameRuns()) {
+            Player player = event.getPlayer();
+            if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+                if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.END_PORTAL_FRAME) {
+                    event.setCancelled(true);
+                    Base playersBase = null;
+                    for (Base target : baseList) {
+                        if (target.loc.equals(event.getClickedBlock().getLocation())) {
+                            playersBase = target;
+                        }
+                    }
+                    if (playersBase.name.equals(player.getScoreboard().getPlayerTeam(player).getName())) {
+                        player.sendMessage(parameters.getPrefix() + ChatColor.RED + "You can't break your own flag");
+                    } else {
+                        playersBase.setLvl(playersBase.baseLvl - 1);
+                        if (playersBase.baseLvl == 0) {
+                            event.getClickedBlock().setType(Material.AIR);
+                            ItemStack baseItem = ItemManager.base.clone();
+                            ItemMeta baseMeta = baseItem.getItemMeta();
+                            baseMeta.setDisplayName("§6" + playersBase.name);
+                            baseItem.setItemMeta(baseMeta);
+                            player.getInventory().addItem(baseItem);
+                        } else {
+                            // cooldown
+                            int coins = playersBase.lvlCosts[playersBase.baseLvl - 1];
+                            player.getInventory().addItem(new ItemStack(Material.EMERALD, coins / 2));
+                        }
+                        player.getWorld().strikeLightningEffect(event.getClickedBlock().getLocation());
                     }
                 }
-                Integer coins = playersBase.lvlCosts[playersBase.baseLvl - 1];
-                playersBase.LvlDown();
-                player.getInventory().addItem(new ItemStack(Material.EMERALD, coins / 2));
             }
         }
     }
 
 
     @EventHandler
-    @Deprecated
     public void onBlockPlace(BlockPlaceEvent event) {
-        Player player = event.getPlayer();
-        Block block = event.getBlockPlaced();
-        Material placedBlockType = event.getBlockPlaced().getType();
-        if (placedBlockType == Material.END_PORTAL_FRAME) {
-            Integer x = block.getX();
-            Integer y = block.getY();
-            Integer z = block.getZ();
-            for(int i = -2; i < 3; i++) {
-                for(int j = 0; j < 4; j++) {
-                    for(int k = -2; k < 8; k++){
-                        if (i == 0 && j == 0 && k == 0) continue;
-                        player.getWorld().getBlockAt(new Location(player.getWorld(), x + i, y + j, z + k)).setType(Material.AIR);
-                        if (player.getScoreboard().getPlayerTeam(player) == null) { return; }
-                        baseList.add(new Base(player.getScoreboard().getPlayerTeam(player).getName(), block.getLocation()));
-                    }
+        if (parameters.getGameRuns()) {
+            Player player = event.getPlayer();
+            Block block = event.getBlockPlaced();
+            Material placedBlockType = event.getBlockPlaced().getType();
+            if (placedBlockType == Material.END_PORTAL_FRAME) {
+                if (parameters.getGameDay() == 1) {
+                    if (player.getScoreboard().getPlayerTeam(player) == null) return;
+                    baseList.add(new Base(player.getScoreboard().getPlayerTeam(player).getName(), block.getLocation()));
+                    BattlePlugin.getInstance().schematics(System.getProperty("user.dir") + "/schematics/Base.schem", player.getWorld(), block.getX() - 7, block.getY() - 1, block.getZ() - 5);
+                    player.getWorld().getBlockAt(block.getLocation()).setType(Material.END_PORTAL_FRAME);
+                } else {
+                    block.setType(Material.AIR);
+                    ItemStack itemStack = event.getItemInHand();
+                    itemStack.setAmount(1);
+                    player.getInventory().remove(Material.END_PORTAL_FRAME);
+                    player.getInventory().addItem(event.getItemInHand());
                 }
             }
-            player.getWorld().getBlockAt(new Location(player.getWorld(), x, y, z + 5)).setType(Material.END_STONE);
         }
     }
 
+    @EventHandler
+    public void onFlagBreak(BlockBreakEvent e) {
+        if (parameters.getGameRuns()) {
+            e.getPlayer().sendMessage(e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().toString());
+            if (e.getBlock().getType().equals(Material.END_PORTAL_FRAME) || e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().equals(Material.END_PORTAL_FRAME)) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onFlagExplode(BlockExplodeEvent e) {
+        if (parameters.getGameRuns()) {
+            System.out.println(e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().toString());
+            if (e.getBlock().getType().equals(Material.END_PORTAL_FRAME) || e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().equals(Material.END_PORTAL_FRAME)) {
+                e.setCancelled(true);
+            }
+        }
+    }
 }

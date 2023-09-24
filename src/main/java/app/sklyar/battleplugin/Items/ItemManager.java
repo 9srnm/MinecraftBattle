@@ -269,7 +269,7 @@ public class ItemManager {
     }
 
     private static void createBuylvl() {
-        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK, 1);
+        ItemStack item = new ItemStack(Material.RED_BANNER, 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§6Buy_LVL");
         List<String> lore = new ArrayList<>();
@@ -280,7 +280,7 @@ public class ItemManager {
     }
 
     private static void createBuyCoinLvl1() {
-        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK, 1);
+        ItemStack item = new ItemStack(Material.GHAST_TEAR, 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§6Buy_Coin_lvl_1");
         List<String> lore = new ArrayList<>();
@@ -291,7 +291,7 @@ public class ItemManager {
     }
 
     private static void createBuyCoinLvl2() {
-        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK, 1);
+        ItemStack item = new ItemStack(Material.NETHER_STAR, 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§6Buy_Coin_lvl_2");
         List<String> lore = new ArrayList<>();
