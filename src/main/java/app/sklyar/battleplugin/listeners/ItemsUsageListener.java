@@ -116,7 +116,7 @@ public class ItemsUsageListener implements Listener {
         Entity damaged = event.getEntity();
         if (damager instanceof Player) {
             Player player = (Player) damager;
-            if (player.getInventory().getItemInMainHand().getItemMeta().equals(ItemManager.excalibur.getItemMeta())){
+            if (player.getInventory().getItemInMainHand().getItemMeta() != null && player.getInventory().getItemInMainHand().getItemMeta().equals(ItemManager.excalibur.getItemMeta())){
                 Random random = new Random();
                 int randomNumber = random.nextInt(100 + 1);
                 if (randomNumber <= 4){

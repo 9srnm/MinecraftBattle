@@ -3,6 +3,7 @@ package app.sklyar.battleplugin.commands;
 import app.sklyar.battleplugin.BattlePlugin;
 import app.sklyar.battleplugin.classes.Parameters;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +16,7 @@ import org.bukkit.scoreboard.Team;
 import sun.security.krb5.internal.APRep;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,7 +43,8 @@ public class BattleCommand implements CommandExecutor {
     private final Recipe[] restrictedRecipes = new Recipe[]{
             Bukkit.getServer().getRecipe(Material.ENCHANTING_TABLE.getKey()),
             Bukkit.getServer().getRecipe(Material.BREWING_STAND.getKey()),
-            Bukkit.getServer().getRecipe(Material.BLAZE_POWDER.getKey())
+            Bukkit.getServer().getRecipe(Material.BLAZE_POWDER.getKey()),
+            Bukkit.getServer().getRecipe(Material.BEACON.getKey())
     };
 
     public BattleCommand(Parameters p, Scoreboard s) {
@@ -85,6 +88,21 @@ public class BattleCommand implements CommandExecutor {
         }
     }
 
+    private void sendTitleToAll(String title, String description) {
+        for (Player p:
+             Bukkit.getServer().getOnlinePlayers()) {
+            int easeIn = 10, length = 100, easeOut = 10;
+            p.sendTitle("" + ChatColor.BOLD + ChatColor.YELLOW + title, description, easeIn, length, easeOut);
+
+        }
+    }
+    private void sendMessageToAll(String title, String description) {
+        for (Player p :
+                Bukkit.getServer().getOnlinePlayers()) {
+            p.sendMessage(parameters.getPrefix() + ChatColor.BOLD + ChatColor.YELLOW + title + "\n" + ChatColor.RESET + description);
+        }
+    }
+
     @Override
     @Deprecated
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
@@ -106,6 +124,13 @@ public class BattleCommand implements CommandExecutor {
 
                     player.getServer().resetRecipes();
                     player.getWorld().setGameRule(GameRule.DO_LIMITED_CRAFTING, false);
+
+                    for (Player p :
+                            player.getServer().getOnlinePlayers()) {
+                        p.setGameMode(GameMode.SURVIVAL);
+                        p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+                        p.setHealth(20);
+                    }
 
                     player.sendMessage(parameters.getPrefix() + ChatColor.GREEN + "Battle has been finished");
                 }
@@ -139,9 +164,17 @@ public class BattleCommand implements CommandExecutor {
                             break;
                         }
                     }
-                    System.out.println(allTeamsHavePlayer);
                     if (allInTeams && allTeamsHavePlayer && scoreboard.getTeams().size() > 1) {
+                        for (Player p :
+                                player.getServer().getOnlinePlayers()) {
+                            p.setGameMode(GameMode.SURVIVAL);
+                            p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+                            p.setHealth(20);
+                        }
                         parameters.changeGameRuns(true);
+
+                        player.getWorld().getWorldBorder().setCenter(player.getWorld().getSpawnLocation());
+                        player.getWorld().getWorldBorder().setSize(parameters.getBorderLength());
 
                         int sectorsAmount = Integer.highestOneBit(scoreboard.getTeams().size() - 1) * 2;
                         int zLength = Math.pow((int) Math.sqrt(sectorsAmount), 2) == sectorsAmount ? (int) Math.sqrt(sectorsAmount) : (int) Math.sqrt(sectorsAmount / 2);
@@ -152,17 +185,14 @@ public class BattleCommand implements CommandExecutor {
                             int zSector = i / xLength;
                             int xSector = i % xLength;
                             Location spawn = player.getWorld().getSpawnLocation();
-                            int coordinateX = (int) spawn.getX() - parameters.getBorderLength() / 2 + parameters.getBorderLength() * xSector / xLength + parameters.getBorderLength() / (2 * xLength);
-                            int coordinateZ = (int) spawn.getZ() - parameters.getBorderLength() / 2 + parameters.getBorderLength() * zSector / zLength + parameters.getBorderLength() / (2 * zLength);
+                            int coordinateX = (int) spawn.getX() - (int) player.getWorld().getWorldBorder().getSize() / 2 + parameters.getBorderLength() * xSector / xLength + parameters.getBorderLength() / (2 * xLength);
+                            int coordinateZ = (int) spawn.getZ() - (int) player.getWorld().getWorldBorder().getSize() / 2 + parameters.getBorderLength() * zSector / zLength + parameters.getBorderLength() / (2 * zLength);
                             for (String pString:
                                  teams[i].getEntries()) {
                                 Player p = Bukkit.getServer().getPlayer(pString);
                                 if (p != null) p.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().add(0, 1, 0));
                             };
                         }
-
-                        player.getWorld().getWorldBorder().setCenter(player.getWorld().getSpawnLocation());
-                        player.getWorld().getWorldBorder().setSize(parameters.getBorderLength());
 
                         player.getWorld().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
                         player.getWorld().setTime(23999);
@@ -178,8 +208,35 @@ public class BattleCommand implements CommandExecutor {
                                 if (timeNow < parameters.getPreviousTime()) {
                                     parameters.changeGameDay(parameters.getGameDay() + 1);
                                     removeRecipes(parameters.getGameDay(), player);
-                                    if (parameters.getGameDay() == 6) {
-                                        player.getWorld().getWorldBorder().setSize(1, parameters.getBorderShrinkTime());
+
+                                    if (parameters.getGameDay() < 7) player.playSound(player, Sound.ENTITY_WITHER_DEATH, 1, 1);
+
+                                    switch (parameters.getGameDay()) {
+                                        case 1:
+                                            sendTitleToAll("НАЧАЛО ИГРЫ", "Ищите изумруды и прокачивайте базу");
+                                            sendMessageToAll("НАЧАЛО ИГРЫ", "Ищите изумруды и прокачивайте базу. Она даст вам эффекты и монеты для покупки интересных вещей на центре. Пока что заходить на территорию соперника нельзя");
+                                            break;
+                                        case 2:
+                                            sendTitleToAll("АЛМАЗНЫЕ ПРЕДМЕТЫ", "Теперь вы можете крафтить алмазные предметы");
+                                            sendMessageToAll("АЛМАЗНЫЕ ПРЕДМЕТЫ И ОТКРЫТИЕ ГРАНИЦ", "Теперь вы можете крафтить алмазные предметы и забегать на территорию соперника, чтобы забрать флаг, тем самым ограничив жизнь соперников до одной");
+                                            break;
+                                        case 3:
+                                            sendTitleToAll("ПОДСВЕТКА БАЗЫ", "База теперь подсвечивается");
+                                            sendMessageToAll("ЭФФЕКТЫ НА ЧУЖОЙ ПОЛОВИНЕ И ПОДСВЕТКА БАЗЫ", "Теперь эффекты, которые вы получили от базы будут действовать на половине соперника. База теперь подсвечивается");
+                                            break;
+                                        case 4:
+                                            sendTitleToAll("ЗОЛОТЫЕ ЯБЛОКИ", "Можно крафтить золотые яблоки");
+                                            sendMessageToAll("ЗОЛОТЫЕ ЯБЛОКИ", "Не хватает ПВП? Скрафти золотые яблоки и вступай в бой");
+                                            break;
+                                        case 5:
+                                            sendTitleToAll("ЗАЧАРОВАНИЯ", "Теперь на центре можно зачаровать свои предметы");
+                                            sendMessageToAll("ЗАЧАРОВАНИЯ", "Теперь на центре можно зачаровать свои предметы");
+                                            break;
+                                        case 6:
+                                            sendTitleToAll("LE FIN!", "Зона сужается! У всех одна жизнь");
+                                            sendMessageToAll("LE FIN!", "Вот и финал! Зона сужается (да-да фортнайтеры, про вас не забыли)! У всех одна жизнь! Кто кого?");
+                                            player.getWorld().getWorldBorder().setSize(1, parameters.getBorderShrinkTime());
+                                            break;
                                     }
                                 }
                                 parameters.changePreviousTime(timeNow);

@@ -7,6 +7,7 @@ import app.sklyar.battleplugin.commands.ItemsCommands;
 import app.sklyar.battleplugin.commands.TestCommands;
 import app.sklyar.battleplugin.listeners.*;
 import app.sklyar.battleplugin.listeners.BlocksUsageListener;
+import app.sklyar.battleplugin.listeners.*;
 import app.sklyar.battleplugin.tabCompletion.BattleTabCompletion;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
@@ -54,13 +55,16 @@ public final class BattlePlugin extends JavaPlugin {
         getCommand("open_shop").setExecutor(new TestCommands(shopItemsLvl1, shopItemsLvl2));
 
         getServer().getPluginManager().registerEvents(new ItemsUsageListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerDeathListener(scoreboard), this);
+
         getServer().getPluginManager().registerEvents(new InventoryListener(shopItemsLvl1, shopItemsLvl2), this);
         getServer().getPluginManager().registerEvents(new BlocksUsageListener(shopItemsLvl1, shopItemsLvl2), this);
         getServer().getPluginManager().registerEvents(new EntityDeathListener(lst), this);
         getServer().getPluginManager().registerEvents(new TrapBreakListener(lst), this);
 
+        getServer().getPluginManager().registerEvents(new PlayerDamageListener(scoreboard, parameters), this);
+
         getServer().getPluginManager().registerEvents(new BlockBreakListener(parameters), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(parameters, scoreboard), this);
+        getServer().getPluginManager().registerEvents(new EnchantmentTableEvent(parameters), this);
     }
 }
