@@ -67,8 +67,9 @@ public class ItemsUsageListener implements Listener {
                             }
                         }
                         double playerMaxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-                        if (playerMaxHealth == 4){
-                            player.setGameMode(GameMode.SPECTATOR);
+                        if (playerMaxHealth <= 4){
+                            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2);
+                            player.setHealth(0);
                         }
                         else{
                             player.setMaxHealth(playerMaxHealth - 4);
