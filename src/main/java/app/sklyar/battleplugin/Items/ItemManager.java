@@ -29,6 +29,11 @@ public class ItemManager {
     public static ItemStack healthhealer;
     public static ItemStack robinsbow;
     public static ItemStack compassoftruth;
+    public static ItemStack teleportationpotion;
+    public static ItemStack buylvl;
+    public static ItemStack buycoinlvl1;
+    public static ItemStack buycoinlvl2;
+    public static ItemStack base;
 
 
     public static void init() {
@@ -43,6 +48,11 @@ public class ItemManager {
         createHealthHealer();
         createRobinsBow();
         createCompassOfTruth();
+        createTeleportPotion();
+        createBuylvl();
+        createBuyCoinLvl1();
+        createBuyCoinLvl2();
+        createBase();
     }
 
     private static void createStormbreaker() {
@@ -242,5 +252,63 @@ public class ItemManager {
         meta.addEnchant(Enchantment.LUCK, 2, false);
         item.setItemMeta(meta);
         compassoftruth = item;
+    }
+
+    private static void createTeleportPotion() {
+        ItemStack item = new ItemStack(Material.HONEY_BOTTLE, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6Teleportation_Potion");
+        List<String> lore = new ArrayList<>();
+        lore.add("§2Teleport you to your base");
+        meta.setLore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.LUCK, 2, false);
+        item.setItemMeta(meta);
+        teleportationpotion = item;
+    }
+
+    private static void createBuylvl() {
+        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6Buy_LVL");
+        List<String> lore = new ArrayList<>();
+        lore.add("§2Upgrade your base to next lvl");
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        buylvl = item;
+    }
+
+    private static void createBuyCoinLvl1() {
+        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6Buy_Coin_lvl_1");
+        List<String> lore = new ArrayList<>();
+        lore.add("§2Give you a coin lvl 1");
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        buycoinlvl1 = item;
+    }
+
+    private static void createBuyCoinLvl2() {
+        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6Buy_Coin_lvl_2");
+        List<String> lore = new ArrayList<>();
+        lore.add("§2Give you a coin lvl 2");
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        buycoinlvl2 = item;
+    }
+
+    private static void createBase() {
+        ItemStack item = new ItemStack(Material.END_PORTAL_FRAME, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6Base");
+        List<String> lore = new ArrayList<>();
+        lore.add("§2Main Base Block");
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        base = item;
     }
 }

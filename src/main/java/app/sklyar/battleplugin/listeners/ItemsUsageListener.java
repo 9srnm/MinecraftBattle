@@ -16,6 +16,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -137,6 +138,13 @@ public class ItemsUsageListener implements Listener {
                     event.getEntity().getWorld().strikeLightning(event.getEntity().getLocation());
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerConsumePotion(PlayerItemConsumeEvent event) {
+        if (event.getItem() != null && event.getItem().getItemMeta().equals(ItemManager.teleportationpotion.getItemMeta())) {
+            event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation());
         }
     }
 

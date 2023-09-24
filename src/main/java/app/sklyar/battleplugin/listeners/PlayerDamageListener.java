@@ -1,17 +1,17 @@
 package app.sklyar.battleplugin.listeners;
 
 import app.sklyar.battleplugin.BattlePlugin;
+import app.sklyar.battleplugin.Items.ItemManager;
 import app.sklyar.battleplugin.classes.Parameters;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.Scoreboard;
@@ -33,6 +33,15 @@ public class PlayerDamageListener implements Listener {
             if (player.getHealth() - e.getDamage() <= 0) {
                 e.setCancelled(true);
                 player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+                for(ItemStack itemStack : player.getInventory().getContents()){
+                    if (itemStack != null && (itemStack.getType() == ItemManager.coinlvl1.getType() || itemStack.getType()
+                            == ItemManager.coinlvl2.getType() || itemStack.getType() == Material.DIAMOND || itemStack.getType() == Material.IRON_INGOT ||
+                            itemStack.getType() == Material.EMERALD)) {
+                        itemStack.setAmount(0);
+                        Item item = player.getWorld().dropItem(player.getLocation(), itemStack);
+                        item.setPickupDelay(2);
+                    }
+                }
                 player.setGameMode(GameMode.SPECTATOR);
                 player.getWorld().strikeLightningEffect(player.getLocation());
 

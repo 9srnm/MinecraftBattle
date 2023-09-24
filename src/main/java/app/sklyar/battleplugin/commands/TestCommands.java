@@ -1,6 +1,7 @@
 package app.sklyar.battleplugin.commands;
 
 import app.sklyar.battleplugin.Items.ItemManager;
+import app.sklyar.battleplugin.inventories.BaseInventory;
 import app.sklyar.battleplugin.inventories.ShopInventory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
@@ -28,7 +29,7 @@ public class TestCommands implements CommandExecutor {
         Player player = (Player) commandSender;
 
         if (command.getName().equalsIgnoreCase("open_shop")) {
-            ShopInventory gui = new ShopInventory(shopItemsLvl1, shopItemsLvl2);
+            BaseInventory gui = new BaseInventory();
             player.openInventory(gui.getInventory());
         }
 
