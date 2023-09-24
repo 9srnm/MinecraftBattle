@@ -101,7 +101,7 @@ public final class BattlePlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BaseInventoryListener(baseList, parameters), this);
         getServer().getPluginManager().registerEvents(new BaseUsageListener(baseList, parameters), this);
 
-        getServer().getPluginManager().registerEvents(new PlayerDamageListener(scoreboard, parameters), this);
+        getServer().getPluginManager().registerEvents(new PlayerDamageListener(scoreboard, parameters, baseList), this);
 
         getServer().getPluginManager().registerEvents(new SpawnBlockPlaceListener(parameters), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(parameters, scoreboard), this);
