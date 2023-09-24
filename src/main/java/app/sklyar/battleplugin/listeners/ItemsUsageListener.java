@@ -1,16 +1,19 @@
 package app.sklyar.battleplugin.listeners;
 
 import app.sklyar.battleplugin.Items.ItemManager;
+import app.sklyar.battleplugin.inventories.ShopInventory;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -56,7 +59,8 @@ public class ItemsUsageListener implements Listener {
                                 double dis2 = target.getLocation().distance(block.getLocation());
                                 double dis3 = player.getLocation().distance(block.getLocation());
                                 if (dis1 + dis2 - dis3 <= 0.3){
-                                    target.setHealth(0);
+                                    target.damage(target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), player);
+                                    player.getWorld().strikeLightningEffect(target.getLocation());
                                     break;
                                 }
                             }
@@ -95,7 +99,7 @@ public class ItemsUsageListener implements Listener {
                         double[] new_z = {2, 2, 2, 0, 0, -2, -2, -2};
                         double[] new_x = {-2, 0, 2, 2, 2, 0, -2, -2};
                         for(int i = 0; i < 8; i++){
-                            player.getWorld().createExplosion(new Location(player.getWorld(), x + new_x[i], y + 1, z + new_z[i]), 2, true, true, player);
+                            player.getWorld().createExplosion(new Location(player.getWorld(), x + new_x[i], y, z + new_z[i]), 2, true, true, player);
                         }
                         for (int i = 0; i < 5; i++) {
                             player.getWorld().strikeLightningEffect(player.getLocation());
@@ -122,5 +126,18 @@ public class ItemsUsageListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onProjectileHit(ProjectileHitEvent event) {
+        if (event.getEntityType() == EntityType.ARROW) {
+            if (event.getEntity().getShooter() instanceof Player) {
+                Player shooter = (Player) event.getEntity().getShooter();
+                ItemStack bow = shooter.getInventory().getItemInMainHand();
+
+                if (bow.getItemMeta().equals(ItemManager.robinsbow.getItemMeta())) {
+                    event.getEntity().getWorld().strikeLightning(event.getEntity().getLocation());
+                }
+            }
+        }
+    }
 
 }
