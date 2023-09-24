@@ -11,6 +11,7 @@ public class Base {
     public final String name;
     public final Location loc;
     public Integer baseLvl = 1;
+    public boolean baseRespawn = true;
     public Integer maxBaseLvl = 5;
     public boolean isUnbreakable = false;
     public HashMap<Player, Integer> playersHistory1 = new HashMap<Player, Integer>();

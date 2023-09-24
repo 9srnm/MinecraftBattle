@@ -61,7 +61,7 @@ public class BaseUsageListener implements Listener {
                             event.getClickedBlock().setType(Material.AIR);
                             ItemStack baseItem = ItemManager.base.clone();
                             ItemMeta baseMeta = baseItem.getItemMeta();
-                            baseMeta.setDisplayName("§6" + playersBase.name);
+                            baseMeta.setDisplayName(playersBase.name);
                             baseItem.setItemMeta(baseMeta);
                             player.getInventory().addItem(baseItem);
                         } else {
@@ -116,6 +116,20 @@ public class BaseUsageListener implements Listener {
             System.out.println(e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().toString());
             if (e.getBlock().getType().equals(Material.END_PORTAL_FRAME) || e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().equals(Material.END_PORTAL_FRAME)) {
                 e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler (priority = EventPriority.HIGH)
+    public void spawnBlockEvent(BlockPlaceEvent event) {
+        Block block = event.getBlock();
+        for(Base base : baseList){
+            Double x = base.loc.getX();
+            Double y = base.loc.getY();
+            Double z = base.loc.getZ();
+            if (block.getLocation().equals(new Location(event.getPlayer().getWorld(), x + 9, y, z - 6)) ||
+                    block.getLocation().equals(new Location(event.getPlayer().getWorld(), x + 9, y + 1, z - 6))){
+                event.setCancelled(true);
             }
         }
     }

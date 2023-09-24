@@ -77,6 +77,7 @@ public final class BattlePlugin extends JavaPlugin {
             put(ItemManager.healthhealer, 1);
             put(ItemManager.compassoftruth, 1);
             put(ItemManager.teleportationpotion, 1);
+
         }};
         // Plugin startup logic
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
@@ -100,8 +101,10 @@ public final class BattlePlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TrapBreakListener(lst), this);
         getServer().getPluginManager().registerEvents(new BaseInventoryListener(baseList, parameters), this);
         getServer().getPluginManager().registerEvents(new BaseUsageListener(baseList, parameters), this);
+        getServer().getPluginManager().registerEvents(new FlagMoveListener(baseList), this);
+        getServer().getPluginManager().registerEvents(new DropFlagListener(), this);
 
-        getServer().getPluginManager().registerEvents(new PlayerDamageListener(scoreboard, parameters), this);
+        getServer().getPluginManager().registerEvents(new PlayerDamageListener(scoreboard, parameters, baseList), this);
 
         getServer().getPluginManager().registerEvents(new SpawnBlockPlaceListener(parameters), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(parameters, scoreboard), this);
