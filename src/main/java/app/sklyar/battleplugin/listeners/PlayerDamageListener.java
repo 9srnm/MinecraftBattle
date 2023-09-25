@@ -18,6 +18,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.Scoreboard;
@@ -49,6 +50,23 @@ public class PlayerDamageListener implements Listener {
                     Item item = player.getWorld().dropItem(player.getLocation(), itemStack);
                     itemStack.setAmount(0);
                     item.setPickupDelay(2);
+                }
+                else if (itemStack != null && (itemStack.getType() == Material.END_PORTAL_FRAME)){
+                    if (!(itemStack.getItemMeta().getDisplayName().equalsIgnoreCase("§6Base"))){
+                        String baseName = itemStack.getItemMeta().getDisplayName();
+                        itemStack.setAmount(0);
+                        player.removePotionEffect(PotionEffectType.GLOWING);
+                        Base base = null;
+                        for(Base target : baseList){
+                            if (target.name.equalsIgnoreCase(baseName)){
+                                base = target;
+                                break;
+                            }
+                        }
+                        Location loc = base.loc;
+                        base.setLvl(1);
+                        player.getWorld().getBlockAt(loc).setType(ItemManager.base.getType());
+                    }
                 }
             }
             player.setGameMode(GameMode.SPECTATOR);
@@ -97,8 +115,9 @@ public class PlayerDamageListener implements Listener {
                         else player.teleport(new Location(player.getWorld(), playerBase[0].loc.getX() - 6, playerBase[0].loc.getY(), playerBase[0].loc.getZ() + 9));
                         player.setGameMode(GameMode.SURVIVAL);
                         if (playerBase[0].baseLvl != 0) {
+                            player.setNoDamageTicks(200);
                             for (PotionEffect pe :
-                                    playerBase[0].effects[playerBase[0].baseLvl - 1]) {
+                                    playerBase[0].effects[playerBase[0].baseLvl - 2]) {
                                 player.addPotionEffect(pe);
                             }
                         }

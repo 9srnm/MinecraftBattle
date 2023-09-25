@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
@@ -40,12 +41,13 @@ public class FlagMoveListener implements Listener {
         }
         if (flag)
             for(Base base : baseList) {
-                if (base.loc.distance(player.getLocation()) <= 32 &&
+                if (base.loc.distance(player.getLocation()) <= 10 &&
                         base.name.equalsIgnoreCase(player.getScoreboard().getPlayerTeam(player).getName())){
                     for(Base losersBase : baseList) {
                         if (losersBase.name.equalsIgnoreCase(baseName)){
                             losersBase.baseRespawn = false;
                             player.getInventory().remove(Material.END_PORTAL_FRAME);
+                            player.removePotionEffect(PotionEffectType.GLOWING);
                             break;
                         }
                     }
