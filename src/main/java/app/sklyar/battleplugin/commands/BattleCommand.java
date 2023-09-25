@@ -33,6 +33,7 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -156,13 +157,21 @@ public class BattleCommand implements CommandExecutor {
                     player.getWorld().setGameRule(GameRule.DO_LIMITED_CRAFTING, false);
 
                     player.getWorld().setGameRule(GameRule.KEEP_INVENTORY, false);
+                    player.getWorld().setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false);
 
                     for (Player p :
                             player.getServer().getOnlinePlayers()) {
                         p.setGameMode(GameMode.SURVIVAL);
                         p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
                         p.setHealth(20);
+                        p.setFoodLevel(20);
+
+                        for (PotionEffect effect :
+                                p.getActivePotionEffects()) {
+                            p.removePotionEffect(effect.getType());
+                        }
                     }
+
 
                     player.sendMessage(parameters.getPrefix() + ChatColor.GREEN + "Battle has been finished");
                 } else if (parameters.getGameRuns()) {
@@ -200,6 +209,7 @@ public class BattleCommand implements CommandExecutor {
                             p.setGameMode(GameMode.SURVIVAL);
                             p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
                             p.setHealth(20);
+                            p.setFoodLevel(20);
                         }
 
                         parameters.changeGameRuns(true);
@@ -215,6 +225,7 @@ public class BattleCommand implements CommandExecutor {
                         }
 
                         player.getWorld().setGameRule(GameRule.KEEP_INVENTORY, true);
+                        player.getWorld().setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
 
                         player.getWorld().getWorldBorder().setCenter(player.getWorld().getSpawnLocation());
                         player.getWorld().getWorldBorder().setSize(parameters.getBorderLength());

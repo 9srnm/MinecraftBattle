@@ -6,6 +6,7 @@ import app.sklyar.battleplugin.classes.Base;
 import app.sklyar.battleplugin.classes.Parameters;
 import app.sklyar.battleplugin.inventories.BaseInventory;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -14,6 +15,7 @@ import org.bukkit.event.Listener;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.List;
@@ -51,8 +53,21 @@ public class BaseInventoryListener implements Listener {
                             }
                         }
                         Integer lvlCost = base.lvlCosts[base.baseLvl - 1];
-                        if (coinsCount >= lvlCost) {
+                        if (coinsCount >= lvlCost && base.baseLvl + 1 <= base.maxBaseLvl) {
                             base.setLvl(base.baseLvl + 1);
+                            for (String p :
+                                    player.getScoreboard().getTeam(base.name).getEntries()) {
+                                for (PotionEffect effect :
+                                        Bukkit.getPlayer(p).getActivePotionEffects()) {
+                                    Bukkit.getPlayer(p).removePotionEffect(effect.getType());
+                                }
+                            }
+                            for (String p : player.getScoreboard().getTeam(base.name).getEntries()) {
+                                for (PotionEffect effect :
+                                         base.effects[base.baseLvl - 2]) {
+                                    Bukkit.getPlayer(p).addPotionEffect(effect);
+                                }
+                            }
                             ItemStack[] inventory = player.getInventory().getContents();
                             for (ItemStack target : inventory) {
                                 if (target != null && target.getType().toString().equalsIgnoreCase(Material.EMERALD.toString())) {

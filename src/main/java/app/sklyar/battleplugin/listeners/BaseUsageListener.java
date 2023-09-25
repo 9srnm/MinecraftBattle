@@ -22,6 +22,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +40,19 @@ public class BaseUsageListener implements Listener {
         this.parameters = parameters;
     }
 
+    @EventHandler (priority = EventPriority.HIGH)
+    public void spawnBlockEvent(BlockPlaceEvent event) {
+        Block block = event.getBlock();
+        for(Base base : baseList){
+            Double x = base.loc.getX();
+            Double y = base.loc.getY();
+            Double z = base.loc.getZ();
+            if (block.getLocation().equals(new Location(event.getPlayer().getWorld(), x - 6, y, z + 9)) ||
+                    block.getLocation().equals(new Location(event.getPlayer().getWorld(), x - 6, y + 1, z + 9))){
+                event.setCancelled(true);
+            }
+        }
+    }
 
     @EventHandler
     @Deprecated
@@ -53,23 +68,50 @@ public class BaseUsageListener implements Listener {
                             playersBase = target;
                         }
                     }
-                    if (playersBase.name.equals(player.getScoreboard().getPlayerTeam(player).getName())) {
-                        player.sendMessage(parameters.getPrefix() + ChatColor.RED + "You can't break your own flag");
-                    } else {
-                        playersBase.setLvl(playersBase.baseLvl - 1);
-                        if (playersBase.baseLvl == 0) {
-                            event.getClickedBlock().setType(Material.AIR);
-                            ItemStack baseItem = ItemManager.base.clone();
-                            ItemMeta baseMeta = baseItem.getItemMeta();
-                            baseMeta.setDisplayName("§6" + playersBase.name);
-                            baseItem.setItemMeta(baseMeta);
-                            player.getInventory().addItem(baseItem);
+                    if (playersBase.isUnbreakable) {
+                        player.sendMessage(parameters.getPrefix() + ChatColor.RED + "The base is on 30 sec cooldown");
+                    }
+                    else {
+                        if (playersBase.name.equals(player.getScoreboard().getPlayerTeam(player).getName())) {
+                            player.sendMessage(parameters.getPrefix() + ChatColor.RED + "You can't break your own flag");
                         } else {
-                            // cooldown
-                            int coins = playersBase.lvlCosts[playersBase.baseLvl - 1];
-                            player.getInventory().addItem(new ItemStack(Material.EMERALD, coins / 2));
+                            for (String p :
+                                    player.getScoreboard().getTeam(playersBase.name).getEntries()) {
+                                for (PotionEffect effect :
+                                        Bukkit.getPlayer(p).getActivePotionEffects()) {
+                                    Bukkit.getPlayer(p).removePotionEffect(effect.getType());
+                                }
+                            }
+                            playersBase.setLvl(playersBase.baseLvl - 1);
+                            if (playersBase.baseLvl > 1) {
+                                for (String p : player.getScoreboard().getTeam(playersBase.name).getEntries()) {
+                                    for (PotionEffect effect :
+                                            playersBase.effects[playersBase.baseLvl - 2]) {
+                                        Bukkit.getPlayer(p).addPotionEffect(effect);
+                                    }
+                                }
+                            }
+
+                            if (playersBase.baseLvl == 0) {
+                                event.getClickedBlock().setType(Material.AIR);
+                                ItemStack baseItem = ItemManager.base.clone();
+                                ItemMeta baseMeta = baseItem.getItemMeta();
+                                baseMeta.setDisplayName(playersBase.name);
+                                baseItem.setItemMeta(baseMeta);
+                                player.getInventory().addItem(baseItem);
+                            } else {
+                                playersBase.isUnbreakable = true;
+                                final Base[] plBase = {playersBase};
+                                BukkitScheduler scheduler = Bukkit.getScheduler();
+                                scheduler.scheduleSyncDelayedTask(BattlePlugin.getInstance(), () -> {
+                                    plBase[0].isUnbreakable = false;
+                                }, 20 * 30);
+
+                                int coins = playersBase.lvlCosts[playersBase.baseLvl - 1];
+                                player.getInventory().addItem(new ItemStack(Material.EMERALD, coins / 2));
+                            }
+                            player.getWorld().strikeLightningEffect(event.getClickedBlock().getLocation());
                         }
-                        player.getWorld().strikeLightningEffect(event.getClickedBlock().getLocation());
                     }
                 }
             }
@@ -103,7 +145,6 @@ public class BaseUsageListener implements Listener {
     @EventHandler
     public void onFlagBreak(BlockBreakEvent e) {
         if (parameters.getGameRuns()) {
-            e.getPlayer().sendMessage(e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().toString());
             if (e.getBlock().getType().equals(Material.END_PORTAL_FRAME) || e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().equals(Material.END_PORTAL_FRAME)) {
                 e.setCancelled(true);
             }
