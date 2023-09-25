@@ -1,6 +1,7 @@
 package app.sklyar.battleplugin.listeners;
 
 import app.sklyar.battleplugin.Items.ItemManager;
+import app.sklyar.battleplugin.classes.Base;
 import app.sklyar.battleplugin.inventories.ShopInventory;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -22,11 +23,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 
 public class ItemsUsageListener implements Listener {
+
+    private final List<Base> baseList;
+
+    public ItemsUsageListener(List<Base> baseList) {
+        this.baseList = baseList;
+    }
 
     @EventHandler
     @Deprecated
@@ -146,6 +154,14 @@ public class ItemsUsageListener implements Listener {
     public void onPlayerConsumePotion(PlayerItemConsumeEvent event) {
         if (event.getItem() != null && event.getItem().getItemMeta().equals(ItemManager.teleportationpotion.getItemMeta())) {
             event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation());
+            Player player = event.getPlayer();
+            String teamName = (player.getScoreboard().getEntryTeam(player.getName()).getName());
+            for(Base base : baseList){
+                if (base.name.equalsIgnoreCase(teamName)){
+                    player.teleport(base.loc.add(-6, 0, 9));
+                    break;
+                }
+            }
         }
     }
 
