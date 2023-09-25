@@ -21,6 +21,7 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.Scoreboard;
@@ -104,6 +105,38 @@ public class BattleCommand implements CommandExecutor {
                 restrictedRecipes) {
             player.getServer().removeRecipe(restrictedItem.getResult().getType().getKey());
         }
+        ShapedRecipe sr1 = new ShapedRecipe(NamespacedKey.minecraft("stormbreaker"), ItemManager.stormbreaker);
+        sr1.shape("IDI",
+                " S ",
+                " S ");
+        sr1.setIngredient('I', Material.IRON_INGOT);
+        sr1.setIngredient('D', Material.DIAMOND_BLOCK);
+        sr1.setIngredient('S', Material.STICK);
+        Bukkit.getServer().addRecipe(sr1);
+
+        ShapedRecipe sr2 = new ShapedRecipe(NamespacedKey.minecraft("sspear"), ItemManager.stonespear);
+        sr2.shape("ISI",
+                " S ",
+                " S ");
+        sr2.setIngredient('I', Material.COBBLESTONE);
+        sr2.setIngredient('S', Material.STICK);
+        Bukkit.getServer().addRecipe(sr2);
+
+        ShapedRecipe sr3 = new ShapedRecipe(NamespacedKey.minecraft("ispear"), ItemManager.ironspear);
+        sr3.shape("ISI",
+                " S ",
+                " S ");
+        sr3.setIngredient('I', Material.IRON_INGOT);
+        sr3.setIngredient('S', Material.STICK);
+        Bukkit.getServer().addRecipe(sr3);
+
+        ShapedRecipe sr4 = new ShapedRecipe(NamespacedKey.minecraft("dspear"), ItemManager.diamondspear);
+        sr4.shape("ISI",
+                " S ",
+                " S ");
+        sr4.setIngredient('I', Material.DIAMOND);
+        sr4.setIngredient('S', Material.STICK);
+        Bukkit.getServer().addRecipe(sr4);
     }
 
     private void sendTitleToAllDays(String title, String description) {

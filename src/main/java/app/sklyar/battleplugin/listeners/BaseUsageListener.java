@@ -125,7 +125,7 @@ public class BaseUsageListener implements Listener {
     }
 
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (parameters.getGameRuns()) {
             Player player = event.getPlayer();
@@ -134,6 +134,10 @@ public class BaseUsageListener implements Listener {
             if (placedBlockType == Material.END_PORTAL_FRAME) {
                 if (parameters.getGameDay() == 1) {
                     if (player.getScoreboard().getPlayerTeam(player) == null) return;
+                    if (player.getLocation().getY() <= 0) {
+                        event.setCancelled(true);
+                        return;
+                    }
                     baseList.add(new Base(player.getScoreboard().getPlayerTeam(player).getName(), block.getLocation()));
                     BattlePlugin.getInstance().schematics(System.getProperty("user.dir") + "/schematics/Base.schem", player.getWorld(), block.getX() - 7, block.getY() - 1, block.getZ() - 5);
                     player.getWorld().getBlockAt(block.getLocation()).setType(Material.END_PORTAL_FRAME);
