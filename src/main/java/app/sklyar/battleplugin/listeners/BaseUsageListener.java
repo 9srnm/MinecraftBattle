@@ -23,7 +23,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,6 +101,10 @@ public class BaseUsageListener implements Listener {
                                 baseMeta.setDisplayName(playersBase.name);
                                 baseItem.setItemMeta(baseMeta);
                                 player.getInventory().addItem(baseItem);
+                                player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1, false, false));
+                                for(String playerName : player.getScoreboard().getTeam(playersBase.name).getEntries()){
+                                    Bukkit.getPlayer(playerName).sendTitle(ChatColor.YELLOW + "БАЗА РАЗРУШЕНА", "Разрушитель подсвечивается белым", 10, 60, 10);
+                                }
                             } else {
                                 playersBase.isUnbreakable = true;
                                 final Base[] plBase = {playersBase};

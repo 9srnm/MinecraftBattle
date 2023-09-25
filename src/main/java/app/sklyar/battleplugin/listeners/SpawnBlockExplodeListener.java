@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
@@ -14,7 +15,7 @@ public class SpawnBlockExplodeListener implements Listener {
     public SpawnBlockExplodeListener(Parameters params) {
         parameters = params;
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onBlockExplode(BlockExplodeEvent e) {
         if (parameters.getGameDay() != 0) {
             Block block = e.getBlock();
