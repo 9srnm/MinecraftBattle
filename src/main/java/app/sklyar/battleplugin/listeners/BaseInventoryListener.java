@@ -94,7 +94,7 @@ public class BaseInventoryListener implements Listener {
                             if (base.playersHistory1.get(player) == 1 && base.baseLvl >= 4) {
                                 base.playersHistory1.put(player, 2);
                                 flag = true;
-                            } else if (base.playersHistory1.get(player) == 2 && base.baseLvl >= 5) {
+                            } else if (base.baseLvl >= 5) {
                                 base.playersHistory1.put(player, 3);
                                 flag = true;
                             }

@@ -22,7 +22,7 @@ public class ShopInventory implements InventoryHolder{
     public ShopInventory(HashMap<ItemStack, Integer> shopItemsLvl1, HashMap<ItemStack, Integer> shopItemsLvl2){
         this.shopItemsLvl1 = shopItemsLvl1;
         this.shopItemsLvl2 = shopItemsLvl2;
-        inv = Bukkit.createInventory(this, Math.max(shopItemsLvl2.size() + shopItemsLvl1.size(), 9), "Shop");
+        inv = Bukkit.createInventory(this, 18, "Shop");
         init();
     }
 
