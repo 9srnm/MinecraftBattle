@@ -34,6 +34,7 @@ public class ItemManager {
     public static ItemStack buycoinlvl1;
     public static ItemStack buycoinlvl2;
     public static ItemStack base;
+    public static ItemStack armor;
 
 
     public static void init() {
@@ -53,6 +54,7 @@ public class ItemManager {
         createBuyCoinLvl1();
         createBuyCoinLvl2();
         createBase();
+        createArmor();
     }
 
     private static void createStormbreaker() {
@@ -310,5 +312,16 @@ public class ItemManager {
         meta.setLore(lore);
         item.setItemMeta(meta);
         base = item;
+    }
+
+    private static void createArmor() {
+        ItemStack item = new ItemStack(Material.NETHERITE_CHESTPLATE, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6Armor");
+        List<String> lore = new ArrayList<>();
+        lore.add("§2Give your teammates netherite armor");
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        armor = item;
     }
 }

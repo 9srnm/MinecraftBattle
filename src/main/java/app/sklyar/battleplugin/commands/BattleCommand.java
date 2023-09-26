@@ -231,6 +231,9 @@ public class BattleCommand implements CommandExecutor {
                             p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
                             p.setHealth(20);
                             p.setFoodLevel(20);
+                            for(ItemStack item : player.getInventory()){
+                                if (item != null) item.setAmount(0);
+                            }
                         }
 
                         parameters.changeGameRuns(true);

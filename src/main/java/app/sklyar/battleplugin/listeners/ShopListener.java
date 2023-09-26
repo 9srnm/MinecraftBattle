@@ -85,9 +85,6 @@ public class ShopListener implements Listener {
                 }
                 else {
                     shopItems = shopItemsLvl2;
-                    if (item.getType() == Material.BOW){
-                        player.getInventory().addItem(new ItemStack(Material.ARROW, 1));
-                    }
                     Integer itemCost = shopItems.get(item);
                     Integer coinsCount = 0;
                     for(ItemStack itemStack : player.getInventory().getContents()){
@@ -96,6 +93,27 @@ public class ShopListener implements Listener {
                         }
                     }
                     if (coinsCount >= itemCost){
+                        if (item.getType() == Material.BOW){
+                            player.getInventory().addItem(new ItemStack(Material.ARROW, 1));
+                        }
+                        else if (item.getType() == Material.NETHERITE_CHESTPLATE){
+                            Team team = player.getScoreboard().getEntryTeam(player.getName());
+                            for(String targetName : team.getEntries()){
+                                Player target = Bukkit.getPlayer(targetName);
+                                ItemStack armor1 = new ItemStack(Material.NETHERITE_HELMET, 1);
+                                target.getInventory().addItem(armor1);
+                                armor1.getItemMeta().setUnbreakable(true);
+                                ItemStack armor2 = new ItemStack(Material.NETHERITE_CHESTPLATE, 1);
+                                armor2.getItemMeta().setUnbreakable(true);
+                                target.getInventory().addItem(armor2);
+                                ItemStack armor3 = new ItemStack(Material.NETHERITE_LEGGINGS, 1);
+                                armor3.getItemMeta().setUnbreakable(true);
+                                target.getInventory().addItem(armor3);
+                                ItemStack armor4 = new ItemStack(Material.NETHERITE_BOOTS, 1);
+                                armor4.getItemMeta().setUnbreakable(true);
+                                target.getInventory().addItem(armor4);
+                            }
+                        }
                         player.getInventory().addItem(item);
                         ItemStack[] inventory = player.getInventory().getContents();
                         for (ItemStack target : inventory) {

@@ -72,6 +72,7 @@ public final class BattlePlugin extends JavaPlugin {
         List<Base> baseList = new ArrayList<>();
         HashMap<ItemStack, Integer> shopItemsLvl2 = new HashMap<ItemStack, Integer>() {{
             put(ItemManager.robinsbow, 2);
+            put(ItemManager.armor, 3);
         }};
         HashMap<ItemStack, Integer> shopItemsLvl1 = new HashMap<ItemStack, Integer>() {{
             put(ItemManager.healthhealer, 1);
@@ -92,10 +93,10 @@ public final class BattlePlugin extends JavaPlugin {
         getCommand("give_excalibur").setExecutor(new ItemsCommands());
         getCommand("open_shop").setExecutor(new TestCommands(shopItemsLvl1, shopItemsLvl2));
 
-        getServer().getPluginManager().registerEvents(new ItemsUsageListener(), this);
+        getServer().getPluginManager().registerEvents(new ItemsUsageListener(baseList), this);
 
         getServer().getPluginManager().registerEvents(new ShopListener(shopItemsLvl1, shopItemsLvl2), this);
-        getServer().getPluginManager().registerEvents(new BlocksUsageListener(shopItemsLvl1, shopItemsLvl2), this);
+        getServer().getPluginManager().registerEvents(new BlocksUsageListener(shopItemsLvl1, shopItemsLvl2, baseList), this);
         getServer().getPluginManager().registerEvents(new EntityDeathListener(lst), this);
         getServer().getPluginManager().registerEvents(new TrapBreakListener(lst), this);
         getServer().getPluginManager().registerEvents(new BaseInventoryListener(baseList, parameters), this);

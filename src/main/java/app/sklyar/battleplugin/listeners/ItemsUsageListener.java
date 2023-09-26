@@ -69,7 +69,7 @@ public class ItemsUsageListener implements Listener {
                                 double dis2 = target.getLocation().distance(block.getLocation());
                                 double dis3 = player.getLocation().distance(block.getLocation());
                                 if (dis1 + dis2 - dis3 <= 0.2){
-                                    target.damage(target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), player);
+                                    target.damage(200, player);
                                     player.getWorld().strikeLightningEffect(target.getLocation());
                                     Bukkit.broadcastMessage(ChatColor.GREEN + player.getName() + " used Avada Kedavra !!!");
 
