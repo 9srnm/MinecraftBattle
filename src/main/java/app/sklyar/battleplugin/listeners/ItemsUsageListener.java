@@ -1,6 +1,7 @@
 package app.sklyar.battleplugin.listeners;
 
 import app.sklyar.battleplugin.Items.ItemManager;
+import app.sklyar.battleplugin.classes.Base;
 import app.sklyar.battleplugin.inventories.ShopInventory;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -19,14 +20,22 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 
 public class ItemsUsageListener implements Listener {
+
+    private final List<Base> baseList;
+
+    public ItemsUsageListener(List<Base> baseList) {
+        this.baseList = baseList;
+    }
 
     @EventHandler
     @Deprecated
@@ -59,13 +68,27 @@ public class ItemsUsageListener implements Listener {
                                 double dis1 = target.getLocation().distance(player.getLocation());
                                 double dis2 = target.getLocation().distance(block.getLocation());
                                 double dis3 = player.getLocation().distance(block.getLocation());
-                                if (dis1 + dis2 - dis3 <= 0.3){
+                                if (dis1 + dis2 - dis3 <= 0.2){
                                     target.damage(target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), player);
                                     player.getWorld().strikeLightningEffect(target.getLocation());
+                                    Bukkit.broadcastMessage(ChatColor.GREEN + player.getName() + " used Avada Kedavra !!!");
+
+                                    Vector direction = target.getLocation().toVector().subtract(player.getLocation().toVector()).normalize();
+                                    double distance = 0;
+                                    Location currentLoc = player.getLocation().clone();
+                                    System.out.println(123);
+                                    while (distance < player.getLocation().distance(target.getLocation())) {
+                                        currentLoc.add(direction);
+                                        player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, currentLoc, 5, 0, 0, 0, 0);
+                                        distance += 1;
+                                    }
                                     break;
                                 }
                             }
                         }
+                        //player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation().add(0, 1, 0), 100, 0.2, 0.2, 0.2);
+                        //player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getEyeLocation(), 100, 0.2, 0.2, 0.2);
+                        //player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation(), 100, 0.2, 0.2, 0.2);
                         double playerMaxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
                         if (playerMaxHealth <= 4){
                             player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2);
@@ -146,7 +169,16 @@ public class ItemsUsageListener implements Listener {
     public void onPlayerConsumePotion(PlayerItemConsumeEvent event) {
         if (event.getItem() != null && event.getItem().getItemMeta().equals(ItemManager.teleportationpotion.getItemMeta())) {
             event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation());
+            Player player = event.getPlayer();
+            String teamName = (player.getScoreboard().getEntryTeam(player.getName()).getName());
+            for(Base base : baseList){
+                if (base.name.equalsIgnoreCase(teamName)){
+                    player.teleport(base.loc.add(-6, 0, 9));
+                    break;
+                }
+            }
         }
     }
+
 
 }

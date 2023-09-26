@@ -34,7 +34,7 @@ public class ShopListener implements Listener {
         this.shopItemsLvl2 = shopItemsLvl2;
     }
     @EventHandler
-    public void ShopListener(InventoryClickEvent event) {
+    public void onShopClick(InventoryClickEvent event) {
         if (event.getClickedInventory() == null) { return; }
         if (event.getClickedInventory().getHolder() instanceof ShopInventory){
             event.setCancelled(true);
