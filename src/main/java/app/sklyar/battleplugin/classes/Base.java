@@ -16,6 +16,8 @@ public class Base {
     public final Location loc;
     public Integer baseLvl = 1;
     public Integer maxBaseLvl = 5;
+    public Integer chestCount = 0;
+    public Integer chestMaxCount = 2;
     public boolean isUnbreakable = false;
     public boolean baseRespawn = true;
     public HashMap<Player, Integer> playersHistory1 = new HashMap<Player, Integer>();

@@ -4,9 +4,9 @@ import app.sklyar.battleplugin.BattlePlugin;
 import app.sklyar.battleplugin.Items.ItemManager;
 import app.sklyar.battleplugin.classes.Base;
 import app.sklyar.battleplugin.classes.Parameters;
-import app.sklyar.battleplugin.inventories.ShopInventory;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+//import app.sklyar.battleplugin.inventories.ShopInventory;
+//import com.sk89q.worldedit.WorldEdit;
+//import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.AbstractVillager;
@@ -52,6 +52,14 @@ public class BaseUsageListener implements Listener {
             if (block.getLocation().equals(new Location(event.getPlayer().getWorld(), x - 6, y, z + 9)) ||
                     block.getLocation().equals(new Location(event.getPlayer().getWorld(), x - 6, y + 1, z + 9))){
                 event.setCancelled(true);
+            }
+            if (block.getType() == Material.CHEST){
+                if (base.chestCount >= base.chestMaxCount) {
+                    event.setCancelled(true);
+                }
+                else{
+                    base.chestCount += 1;
+                }
             }
         }
     }
@@ -139,7 +147,7 @@ public class BaseUsageListener implements Listener {
                         return;
                     }
                     baseList.add(new Base(player.getScoreboard().getPlayerTeam(player).getName(), block.getLocation()));
-                    BattlePlugin.getInstance().schematics(System.getProperty("user.dir") + "/schematics/Base.schem", player.getWorld(), block.getX() - 7, block.getY() - 1, block.getZ() - 5);
+                    //BattlePlugin.getInstance().schematics(System.getProperty("user.dir") + "/schematics/Base.schem", player.getWorld(), block.getX() - 7, block.getY() - 1, block.getZ() - 5);
                     player.getWorld().getBlockAt(block.getLocation()).setType(Material.END_PORTAL_FRAME);
                 } else {
                     block.setType(Material.AIR);
@@ -157,6 +165,19 @@ public class BaseUsageListener implements Listener {
         if (parameters.getGameRuns()) {
             if (e.getBlock().getType().equals(Material.END_PORTAL_FRAME) || e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().equals(Material.END_PORTAL_FRAME)) {
                 e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void chestBreak(BlockBreakEvent e) {
+        Block block = e.getBlock();
+        if (parameters.getGameRuns()) {
+            for(Base base : baseList){
+                if (base.loc.distance(block.getLocation()) <= 16){
+                    base.chestCount -= 1;
+                    base.chestCount = Math.max(0, base.chestCount);
+                }
             }
         }
     }
