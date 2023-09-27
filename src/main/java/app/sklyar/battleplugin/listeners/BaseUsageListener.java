@@ -173,10 +173,12 @@ public class BaseUsageListener implements Listener {
     public void chestBreak(BlockBreakEvent e) {
         Block block = e.getBlock();
         if (parameters.getGameRuns()) {
-            for(Base base : baseList){
-                if (base.loc.distance(block.getLocation()) <= 16){
-                    base.chestCount -= 1;
-                    base.chestCount = Math.max(0, base.chestCount);
+            if (e.getBlock().getType() == Material.CHEST) {
+                for (Base base : baseList) {
+                    if (base.loc.distance(block.getLocation()) <= 16) {
+                        base.chestCount -= 1;
+                        base.chestCount = Math.max(0, base.chestCount);
+                    }
                 }
             }
         }

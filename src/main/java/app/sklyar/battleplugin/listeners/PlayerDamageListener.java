@@ -114,8 +114,8 @@ public class PlayerDamageListener implements Listener {
                         if (playerBase[0] == null) player.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().add(0, 1, 0));
                         else {
                             player.teleport(new Location(player.getWorld(), playerBase[0].loc.getX() - 6, playerBase[0].loc.getY(), playerBase[0].loc.getZ() + 9));
-                            if (playerBase[0].baseLvl != 0) {
-                                player.setNoDamageTicks(200);
+                            player.setNoDamageTicks(200);
+                            if (playerBase[0].baseLvl > 1) {
                                 for (PotionEffect pe :
                                         playerBase[0].effects[playerBase[0].baseLvl - 2]) {
                                     player.addPotionEffect(pe);

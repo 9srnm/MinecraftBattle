@@ -111,5 +111,6 @@ public final class BattlePlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new DropFlagListener(), this);
         getServer().getPluginManager().registerEvents(new FlagMoveListener(baseList), this);
+        getServer().getPluginManager().registerEvents(new ArmorStandListener(), this);
     }
 }

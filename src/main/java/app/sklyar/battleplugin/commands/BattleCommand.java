@@ -84,19 +84,19 @@ public class BattleCommand implements CommandExecutor {
     }
 
     private void removeRecipes(int day, Player player) {
-        player.getServer().resetRecipes();
+        Bukkit.getServer().resetRecipes();
         if (day < 2) {
             for (Recipe diamondItem :
                     diamondRequiredRecipes) {
-                player.getServer().removeRecipe(diamondItem.getResult().getType().getKey());
+                Bukkit.getServer().removeRecipe(diamondItem.getResult().getType().getKey());
             }
         }
         if (day < 4) {
-            player.getServer().removeRecipe(goldenAppleRecipe.getResult().getType().getKey());
+            Bukkit.getServer().removeRecipe(goldenAppleRecipe.getResult().getType().getKey());
         }
         for (Recipe restrictedItem :
                 restrictedRecipes) {
-            player.getServer().removeRecipe(restrictedItem.getResult().getType().getKey());
+            Bukkit.getServer().removeRecipe(restrictedItem.getResult().getType().getKey());
         }
         ShapedRecipe sr1 = new ShapedRecipe(NamespacedKey.minecraft("stormbreaker"), ItemManager.stormbreaker);
         sr1.shape("IDI",
@@ -167,7 +167,7 @@ public class BattleCommand implements CommandExecutor {
                     player.getWorld().getWorldBorder().reset();
                     player.getWorld().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
 
-                    player.getServer().resetRecipes();
+                    Bukkit.getServer().resetRecipes();
                     player.getWorld().setGameRule(GameRule.DO_LIMITED_CRAFTING, false);
 
                     player.getWorld().setGameRule(GameRule.KEEP_INVENTORY, false);

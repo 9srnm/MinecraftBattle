@@ -101,8 +101,8 @@ public class ShopListener implements Listener {
                             for(String targetName : team.getEntries()){
                                 Player target = Bukkit.getPlayer(targetName);
                                 ItemStack armor1 = new ItemStack(Material.NETHERITE_HELMET, 1);
-                                target.getInventory().addItem(armor1);
                                 armor1.getItemMeta().setUnbreakable(true);
+                                target.getInventory().addItem(armor1);
                                 ItemStack armor2 = new ItemStack(Material.NETHERITE_CHESTPLATE, 1);
                                 armor2.getItemMeta().setUnbreakable(true);
                                 target.getInventory().addItem(armor2);
