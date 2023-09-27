@@ -61,6 +61,7 @@ public class ShopListener implements Listener {
                         if (item.getType() == Material.ENCHANTED_GOLDEN_APPLE){
                             double playerMaxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
                             if (playerMaxHealth <= 18) { player.setMaxHealth(playerMaxHealth + 2); }
+                            else { return; }
                         }
                         else if (item.getType() == Material.COMPASS){
                             BukkitScheduler scheduler = Bukkit.getScheduler();
@@ -101,20 +102,29 @@ public class ShopListener implements Listener {
                             for(String targetName : team.getEntries()){
                                 Player target = Bukkit.getPlayer(targetName);
                                 ItemStack armor1 = new ItemStack(Material.NETHERITE_HELMET, 1);
-                                armor1.getItemMeta().setUnbreakable(true);
+                                ItemMeta meta1 = armor1.getItemMeta();
+                                meta1.setUnbreakable(true);
+                                armor1.setItemMeta(meta1);
                                 target.getInventory().addItem(armor1);
                                 ItemStack armor2 = new ItemStack(Material.NETHERITE_CHESTPLATE, 1);
-                                armor2.getItemMeta().setUnbreakable(true);
+                                ItemMeta meta2 = armor2.getItemMeta();
+                                meta2.setUnbreakable(true);
+                                armor2.setItemMeta(meta2);
                                 target.getInventory().addItem(armor2);
                                 ItemStack armor3 = new ItemStack(Material.NETHERITE_LEGGINGS, 1);
+                                ItemMeta meta3 = armor3.getItemMeta();
+                                meta3.setUnbreakable(true);
+                                armor3.setItemMeta(meta3);
                                 armor3.getItemMeta().setUnbreakable(true);
                                 target.getInventory().addItem(armor3);
                                 ItemStack armor4 = new ItemStack(Material.NETHERITE_BOOTS, 1);
-                                armor4.getItemMeta().setUnbreakable(true);
+                                ItemMeta meta4 = armor4.getItemMeta();
+                                meta4.setUnbreakable(true);
+                                armor4.setItemMeta(meta4);
                                 target.getInventory().addItem(armor4);
                             }
                         }
-                        player.getInventory().addItem(item);
+                        else { player.getInventory().addItem(item); }
                         ItemStack[] inventory = player.getInventory().getContents();
                         for (ItemStack target : inventory) {
                             if (target != null && target.getType().toString().equalsIgnoreCase(ItemManager.coinlvl2.getType().toString())) {

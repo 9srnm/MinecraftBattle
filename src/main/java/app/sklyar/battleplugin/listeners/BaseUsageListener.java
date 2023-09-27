@@ -53,7 +53,7 @@ public class BaseUsageListener implements Listener {
                     block.getLocation().equals(new Location(event.getPlayer().getWorld(), x - 6, y + 1, z + 9))){
                 event.setCancelled(true);
             }
-            if (block.getType() == Material.CHEST){
+            if (block.getType() == Material.CHEST && block.getLocation().distance(base.loc) <= 16){
                 if (base.chestCount >= base.chestMaxCount) {
                     event.setCancelled(true);
                 }
@@ -142,12 +142,12 @@ public class BaseUsageListener implements Listener {
             if (placedBlockType == Material.END_PORTAL_FRAME) {
                 if (parameters.getGameDay() == 1) {
                     if (player.getScoreboard().getPlayerTeam(player) == null) return;
-                    if (player.getLocation().getY() <= 0) {
+                    if (Math.abs(player.getWorld().getHighestBlockAt(player.getLocation()).getY() - block.getLocation().getY()) >= 30) {
                         event.setCancelled(true);
                         return;
                     }
                     baseList.add(new Base(player.getScoreboard().getPlayerTeam(player).getName(), block.getLocation()));
-                    BattlePlugin.getInstance().schematics(System.getProperty("user.dir") + "/schematics/Base.schem", player.getWorld(), block.getX() + 1, block.getY() - 1, block.getZ() + 3);
+                    //BattlePlugin.getInstance().schematics(System.getProperty("user.dir") + "/schematics/Base.schem", player.getWorld(), block.getX() + 1, block.getY() - 1, block.getZ() + 3);
                     player.getWorld().getBlockAt(block.getLocation()).setType(Material.END_PORTAL_FRAME);
                 } else {
                     block.setType(Material.AIR);
@@ -177,6 +177,7 @@ public class BaseUsageListener implements Listener {
                 for (Base base : baseList) {
                     if (base.loc.distance(block.getLocation()) <= 16) {
                         base.chestCount -= 1;
+                        e.getPlayer().sendMessage(base.name + base.chestCount);
                         base.chestCount = Math.max(0, base.chestCount);
                     }
                 }

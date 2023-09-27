@@ -29,7 +29,7 @@ public class EntityDeathListener implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
         Entity entity = event.getEntity();
         EntityType entityType = event.getEntityType();
-        double dropChance = 0.05;
+        double dropChance = 1;
 
         if (entityType == EntityType.ZOMBIE || entityType == EntityType.SKELETON || entityType == EntityType.SPIDER || entityType == EntityType.CREEPER) {
             Random random = new Random();

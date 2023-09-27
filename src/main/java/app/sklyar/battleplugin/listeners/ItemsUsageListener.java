@@ -45,7 +45,7 @@ public class ItemsUsageListener implements Listener {
             if (event.getItem().getItemMeta().equals(ItemManager.stormbreaker.getItemMeta())) {
                 if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     if (!player.hasCooldown(event.getMaterial())) {
-                        player.setCooldown(event.getMaterial(), 20);
+                        player.setCooldown(event.getMaterial(), 1200);
                         Block block = player.getTargetBlock(null, 30);
                         World world = player.getWorld();
                         while (block.getType() == Material.AIR) {
@@ -61,7 +61,7 @@ public class ItemsUsageListener implements Listener {
             if (event.getItem().getItemMeta().equals(ItemManager.elderwand.getItemMeta())) {
                 if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     if (!player.hasCooldown(event.getMaterial())) {
-                        player.setCooldown(event.getMaterial(), 20);
+                        player.setCooldown(event.getMaterial(), 2400);
                         Block block = player.getTargetBlock(null, 50);
                         for (Player target : Bukkit.getOnlinePlayers()) {
                             if (player.hasLineOfSight(target) && target != player && !(player.getScoreboard().getPlayerTeam(player).equals(target.getScoreboard().getPlayerTeam(target)))) {
@@ -116,7 +116,7 @@ public class ItemsUsageListener implements Listener {
             if (event.getItem().getItemMeta().equals(ItemManager.excalibur.getItemMeta())) {
                 if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     if (!player.hasCooldown(event.getMaterial())) {
-                        player.setCooldown(event.getMaterial(), 20);
+                        player.setCooldown(event.getMaterial(), 600);
                         Location loc = player.getLocation();
                         double x = loc.getX();
                         double y = loc.getY();
@@ -144,7 +144,7 @@ public class ItemsUsageListener implements Listener {
             if (player.getInventory().getItemInMainHand().getItemMeta() != null && player.getInventory().getItemInMainHand().getItemMeta().equals(ItemManager.excalibur.getItemMeta())){
                 Random random = new Random();
                 int randomNumber = random.nextInt(100 + 1);
-                if (randomNumber <= 4){
+                if (randomNumber <= 15){
                     player.getWorld().createExplosion(damaged.getLocation(), 3, true, true, damager);
                 }
             }

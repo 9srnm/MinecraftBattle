@@ -22,6 +22,7 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
@@ -63,6 +64,7 @@ public final class BattlePlugin extends JavaPlugin {
             e.printStackTrace();
         }
     }
+//    }
     @Override
     public void onEnable() {
         plugin = this;
@@ -72,13 +74,17 @@ public final class BattlePlugin extends JavaPlugin {
         List<Entity> lst = new ArrayList<>();
         List<Base> baseList = new ArrayList<>();
         HashMap<ItemStack, Integer> shopItemsLvl2 = new HashMap<ItemStack, Integer>() {{
-            put(ItemManager.robinsbow, 2);
+            put(ItemManager.robinsbow, 1);
             put(ItemManager.armor, 3);
+            put(ItemManager.elderwand, 2);
         }};
         HashMap<ItemStack, Integer> shopItemsLvl1 = new HashMap<ItemStack, Integer>() {{
             put(ItemManager.healthhealer, 1);
             put(ItemManager.compassoftruth, 1);
             put(ItemManager.teleportationpotion, 1);
+            put(new ItemStack(Material.GOLDEN_APPLE, 3), 1);
+            put(new ItemStack(Material.ENDER_PEARL, 16), 1);
+            put(new ItemStack(Material.TOTEM_OF_UNDYING, 1), 5);
         }};
         // Plugin startup logic
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
@@ -94,6 +100,7 @@ public final class BattlePlugin extends JavaPlugin {
         getCommand("give_elderwand").setExecutor(new ItemsCommands(parameters, baseList));
         getCommand("give_excalibur").setExecutor(new ItemsCommands(parameters, baseList));
         getCommand("open_shop").setExecutor(new TestCommands(shopItemsLvl1, shopItemsLvl2));
+        getCommand("get_loc").setExecutor(new TestCommands(shopItemsLvl1, shopItemsLvl2));
 
         getServer().getPluginManager().registerEvents(new ItemsUsageListener(baseList), this);
 

@@ -58,7 +58,7 @@ public class ItemManager {
     }
 
     private static void createStormbreaker() {
-        ItemStack item = new ItemStack(Material.DIAMOND_AXE, 1);
+        ItemStack item = new ItemStack(Material.NETHERITE_AXE, 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§6Stormbreaker");
         List<String> lore = new ArrayList<>();
@@ -67,9 +67,10 @@ public class ItemManager {
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.setUnbreakable(true);
-        meta.addEnchant(Enchantment.DAMAGE_ALL, 3, false);
-        AttributeModifier damage = new AttributeModifier(UUID.randomUUID(), "generic.attackDamage", 70, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
+        meta.addEnchant(Enchantment.DAMAGE_ALL, 1, false);
+        AttributeModifier damage = new AttributeModifier(UUID.randomUUID(), "generic.attackDamage", 8, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
         meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, damage);
+        meta.addEnchant(Enchantment.FIRE_ASPECT, 1, false);
         item.setItemMeta(meta);
         stormbreaker = item;
 
@@ -95,7 +96,7 @@ public class ItemManager {
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.addEnchant(Enchantment.LUCK, 1, false);
         meta.setUnbreakable(true);
-        AttributeModifier attackSpeed = new AttributeModifier(UUID.randomUUID(), "generic.attackSpeed", -3.5, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
+        AttributeModifier attackSpeed = new AttributeModifier(UUID.randomUUID(), "generic.attackSpeed", -3.9, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
         meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, attackSpeed);
         item.setItemMeta(meta);
         elderwand = item;
@@ -107,7 +108,7 @@ public class ItemManager {
         meta.setDisplayName("§6STONE_SPEAR");
         AttributeModifier attackSpeed = new AttributeModifier(UUID.randomUUID(), "generic.attackSpeed", 1024, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
         meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, attackSpeed);
-        AttributeModifier damage = new AttributeModifier(UUID.randomUUID(), "generic.attackDamage", -1, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
+        AttributeModifier damage = new AttributeModifier(UUID.randomUUID(), "generic.attackDamage", 3, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
         meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, damage);
         item.setItemMeta(meta);
         stonespear = item;
@@ -127,7 +128,7 @@ public class ItemManager {
         meta.setDisplayName("§6IRON_SPEAR");
         AttributeModifier attackSpeed = new AttributeModifier(UUID.randomUUID(), "generic.attackSpeed", 1024, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
         meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, attackSpeed);
-        AttributeModifier damage = new AttributeModifier(UUID.randomUUID(), "generic.attackDamage", -1, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
+        AttributeModifier damage = new AttributeModifier(UUID.randomUUID(), "generic.attackDamage", 4, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
         meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, damage);
         item.setItemMeta(meta);
         ironspear = item;
@@ -147,7 +148,7 @@ public class ItemManager {
         meta.setDisplayName("§6DIAMOND_SPEAR");
         AttributeModifier attackSpeed = new AttributeModifier(UUID.randomUUID(), "generic.attackSpeed", 1024, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
         meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, attackSpeed);
-        AttributeModifier damage = new AttributeModifier(UUID.randomUUID(), "generic.attackDamage", -1, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
+        AttributeModifier damage = new AttributeModifier(UUID.randomUUID(), "generic.attackDamage", 5, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
         meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, damage);
         item.setItemMeta(meta);
         diamondspear = item;
@@ -172,8 +173,9 @@ public class ItemManager {
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.setUnbreakable(true);
         meta.addEnchant(Enchantment.DAMAGE_ALL, 3, false);
-        //AttributeModifier damage = new AttributeModifier(UUID.randomUUID(), "generic.attackDamage", 70, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
-        //meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, damage);
+        meta.addEnchant(Enchantment.FIRE_ASPECT, 2, false);
+        AttributeModifier damage = new AttributeModifier(UUID.randomUUID(), "generic.attackDamage", 9, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
+        meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, damage);
         item.setItemMeta(meta);
         excalibur = item;
 
