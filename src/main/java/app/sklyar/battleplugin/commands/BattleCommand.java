@@ -83,54 +83,54 @@ public class BattleCommand implements CommandExecutor {
         }
     }
 
-    private void removeRecipes(int day, Player player) {
-        Bukkit.getServer().resetRecipes();
-        if (day < 2) {
-            for (Recipe diamondItem :
-                    diamondRequiredRecipes) {
-                Bukkit.getServer().removeRecipe(diamondItem.getResult().getType().getKey());
-            }
-        }
-        if (day < 4) {
-            Bukkit.getServer().removeRecipe(goldenAppleRecipe.getResult().getType().getKey());
-        }
-        for (Recipe restrictedItem :
-                restrictedRecipes) {
-            Bukkit.getServer().removeRecipe(restrictedItem.getResult().getType().getKey());
-        }
-        ShapedRecipe sr1 = new ShapedRecipe(NamespacedKey.minecraft("stormbreaker"), ItemManager.stormbreaker);
-        sr1.shape("IDI",
-                " S ",
-                " S ");
-        sr1.setIngredient('I', Material.IRON_INGOT);
-        sr1.setIngredient('D', Material.DIAMOND_BLOCK);
-        sr1.setIngredient('S', Material.STICK);
-        Bukkit.getServer().addRecipe(sr1);
-
-        ShapedRecipe sr2 = new ShapedRecipe(NamespacedKey.minecraft("sspear"), ItemManager.stonespear);
-        sr2.shape("ISI",
-                " S ",
-                " S ");
-        sr2.setIngredient('I', Material.COBBLESTONE);
-        sr2.setIngredient('S', Material.STICK);
-        Bukkit.getServer().addRecipe(sr2);
-
-        ShapedRecipe sr3 = new ShapedRecipe(NamespacedKey.minecraft("ispear"), ItemManager.ironspear);
-        sr3.shape("ISI",
-                " S ",
-                " S ");
-        sr3.setIngredient('I', Material.IRON_INGOT);
-        sr3.setIngredient('S', Material.STICK);
-        Bukkit.getServer().addRecipe(sr3);
-
-        ShapedRecipe sr4 = new ShapedRecipe(NamespacedKey.minecraft("dspear"), ItemManager.diamondspear);
-        sr4.shape("ISI",
-                " S ",
-                " S ");
-        sr4.setIngredient('I', Material.DIAMOND);
-        sr4.setIngredient('S', Material.STICK);
-        Bukkit.getServer().addRecipe(sr4);
-    }
+//    private void removeRecipes(int day, Player player) {
+//        Bukkit.getServer().resetRecipes();
+//        if (day < 2) {
+//            for (Recipe diamondItem :
+//                    diamondRequiredRecipes) {
+//                Bukkit.getServer().removeRecipe(diamondItem.getResult().getType().getKey());
+//            }
+//        }
+//        if (day < 4) {
+//            Bukkit.getServer().removeRecipe(goldenAppleRecipe.getResult().getType().getKey());
+//        }
+//        for (Recipe restrictedItem :
+//                restrictedRecipes) {
+//            Bukkit.getServer().removeRecipe(restrictedItem.getResult().getType().getKey());
+//        }
+//        ShapedRecipe sr1 = new ShapedRecipe(NamespacedKey.minecraft("stormbreaker"), ItemManager.stormbreaker);
+//        sr1.shape("IDI",
+//                " S ",
+//                " S ");
+//        sr1.setIngredient('I', Material.IRON_INGOT);
+//        sr1.setIngredient('D', Material.DIAMOND_BLOCK);
+//        sr1.setIngredient('S', Material.STICK);
+//        Bukkit.getServer().addRecipe(sr1);
+//
+//        ShapedRecipe sr2 = new ShapedRecipe(NamespacedKey.minecraft("sspear"), ItemManager.stonespear);
+//        sr2.shape("ISI",
+//                " S ",
+//                " S ");
+//        sr2.setIngredient('I', Material.COBBLESTONE);
+//        sr2.setIngredient('S', Material.STICK);
+//        Bukkit.getServer().addRecipe(sr2);
+//
+//        ShapedRecipe sr3 = new ShapedRecipe(NamespacedKey.minecraft("ispear"), ItemManager.ironspear);
+//        sr3.shape("ISI",
+//                " S ",
+//                " S ");
+//        sr3.setIngredient('I', Material.IRON_INGOT);
+//        sr3.setIngredient('S', Material.STICK);
+//        Bukkit.getServer().addRecipe(sr3);
+//
+//        ShapedRecipe sr4 = new ShapedRecipe(NamespacedKey.minecraft("dspear"), ItemManager.diamondspear);
+//        sr4.shape("ISI",
+//                " S ",
+//                " S ");
+//        sr4.setIngredient('I', Material.DIAMOND);
+//        sr4.setIngredient('S', Material.STICK);
+//        Bukkit.getServer().addRecipe(sr4);
+//    }
 
     private void sendTitleToAllDays(String title, String description) {
         for (Player p :
@@ -217,13 +217,16 @@ public class BattleCommand implements CommandExecutor {
                         }
                     }
                     if (allInTeams && allTeamsHavePlayer && scoreboard.getTeams().size() > 1) {
+
+                        for (Recipe restrictedItem : restrictedRecipes) Bukkit.getServer().removeRecipe(restrictedItem.getResult().getType().getKey());
+
                         for (Player p :
                                 player.getServer().getOnlinePlayers()) {
                             p.setGameMode(GameMode.SURVIVAL);
                             p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
                             p.setHealth(20);
                             p.setFoodLevel(20);
-                            for(ItemStack item : player.getInventory()){
+                            for(ItemStack item : p.getInventory()){
                                 if (item != null) item.setAmount(0);
                             }
                         }
@@ -279,7 +282,7 @@ public class BattleCommand implements CommandExecutor {
                                 long timeNow = player.getWorld().getTime();
                                 if (timeNow < parameters.getPreviousTime()) {
                                     parameters.changeGameDay(parameters.getGameDay() + 1);
-                                    removeRecipes(parameters.getGameDay(), player);
+                                    //removeRecipes(parameters.getGameDay(), player);
 
                                     if (parameters.getGameDay() < 6) {
                                         int[] deltaTimeForChests = new int[4];

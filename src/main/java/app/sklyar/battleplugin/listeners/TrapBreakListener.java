@@ -33,7 +33,7 @@ public class TrapBreakListener implements Listener {
         Block block = event.getBlock();
         if (block.getType() == Material.REDSTONE_ORE || block.getType() == Material.DEEPSLATE_REDSTONE_ORE) {
             Random random1 = new Random();
-            if (random1.nextDouble() < 0.1) {
+            if (random1.nextDouble() < 0.3) {
                 Random random2 = new Random();
                 int randomNumber = random2.nextInt(2 + 1);
                 double x = player.getLocation().getX();
@@ -47,16 +47,13 @@ public class TrapBreakListener implements Listener {
                     }
                 }
                 if (randomNumber == 0){
-                    for(int i = 0; i < 5; i++){
+                    for(int i = 0; i < 10; i++){
                         Entity entity = player.getWorld().spawnEntity(new Location(player.getWorld(), x + 1, y, z), EntityType.ZOMBIE);
                         lst.add(entity);
                     }
-                    for(int i = 0; i < 5; i++){
-                        player.getWorld().spawnEntity(new Location(player.getWorld(), x + 1, y, z), EntityType.ZOMBIE);
-                    }
                 }
                 else if (randomNumber == 1){
-                    for(int i = 0; i < 5; i++){
+                    for(int i = 0; i < 7; i++){
                         Entity entity = player.getWorld().spawnEntity(new Location(player.getWorld(), x + 1, y, z), EntityType.SPIDER);
                         lst.add(entity);
                     }
