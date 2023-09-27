@@ -128,7 +128,7 @@ public class PlayerDamageListener implements Listener {
 
             double playerMaxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
 
-            if (playerMaxHealth == 2 || (playerBase != null && !(playerBase[0].baseRespawn))) {
+            if (playerMaxHealth == 2 || (playerBase[0] != null && !(playerBase[0].baseRespawn))) {
                 player.setGameMode(GameMode.SPECTATOR);
                 player.setMaxHealth(1);
             } else {
@@ -176,9 +176,8 @@ public class PlayerDamageListener implements Listener {
                     teamAlive = team;
                 }
             }
-            System.out.println(countAlive);
-            System.out.println(teamAlive.getName());
             if (countAlive == 1) {
+                parameters.changeGameRuns(false);
                 for (Player p :
                         Bukkit.getOnlinePlayers()) {
                     p.setGameMode(GameMode.SPECTATOR);
@@ -194,8 +193,8 @@ public class PlayerDamageListener implements Listener {
                     @Override
                     public void run() {
                         Random rand = new Random();
-                        int x = rand.nextInt(-100, 100) + (int) player.getWorld().getSpawnLocation().getX();
-                        int z = rand.nextInt(-100, 100) + (int) player.getWorld().getSpawnLocation().getZ();
+                        int x = rand.nextInt(-10, 10) + (int) player.getWorld().getSpawnLocation().getX();
+                        int z = rand.nextInt(-10, 10) + (int) player.getWorld().getSpawnLocation().getZ();
                         Location loc = player.getWorld().getHighestBlockAt(x, z).getLocation();
                         Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
                         FireworkMeta fwm = fw.getFireworkMeta();

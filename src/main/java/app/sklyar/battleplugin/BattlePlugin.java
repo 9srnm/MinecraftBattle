@@ -49,10 +49,11 @@ public final class BattlePlugin extends JavaPlugin {
         ClipboardFormat format = ClipboardFormats.findByFile(file);
         try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
             clipboard = reader.read();
+            int sizeX = clipboard.getDimensions().getBlockX(), sizeZ = clipboard.getDimensions().getBlockZ();
             try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
                 Operation operation = new ClipboardHolder(clipboard)
                         .createPaste(editSession)
-                        .to(BlockVector3.at(x, y, z))
+                        .to(BlockVector3.at(x - sizeX / 2, y, z - sizeZ / 2))
                         // configure here
                         .build();
                 Operations.complete(operation);
@@ -96,7 +97,7 @@ public final class BattlePlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ItemsUsageListener(baseList), this);
 
         getServer().getPluginManager().registerEvents(new ShopListener(shopItemsLvl1, shopItemsLvl2), this);
-        getServer().getPluginManager().registerEvents(new BlocksUsageListener(shopItemsLvl1, shopItemsLvl2, baseList), this);
+        getServer().getPluginManager().registerEvents(new BlocksUsageListener(shopItemsLvl1, shopItemsLvl2, baseList, parameters), this);
         getServer().getPluginManager().registerEvents(new EntityDeathListener(lst), this);
         getServer().getPluginManager().registerEvents(new TrapBreakListener(lst), this);
         getServer().getPluginManager().registerEvents(new BaseInventoryListener(baseList, parameters), this);

@@ -1,6 +1,7 @@
 package app.sklyar.battleplugin.listeners;
 
 import app.sklyar.battleplugin.classes.Base;
+import app.sklyar.battleplugin.classes.Parameters;
 import app.sklyar.battleplugin.inventories.BaseInventory;
 import app.sklyar.battleplugin.inventories.ShopInventory;
 import org.bukkit.*;
@@ -24,10 +25,12 @@ public class BlocksUsageListener implements Listener {
     private final HashMap<ItemStack, Integer> shopItemsLvl2;
     private final HashMap<ItemStack, Integer> shopItemsLvl1;
     List<Base> baseList = new ArrayList<>();
-    public BlocksUsageListener(HashMap<ItemStack, Integer> shopItemsLvl1, HashMap<ItemStack, Integer> shopItemsLvl2, List<Base> baseList) {
+    private final Parameters parameters;
+    public BlocksUsageListener(HashMap<ItemStack, Integer> shopItemsLvl1, HashMap<ItemStack, Integer> shopItemsLvl2, List<Base> baseList, Parameters parameters) {
         this.shopItemsLvl1 = shopItemsLvl1;
         this.shopItemsLvl2 = shopItemsLvl2;
         this.baseList = baseList;
+        this.parameters = parameters;
     }
 
 
@@ -49,10 +52,10 @@ public class BlocksUsageListener implements Listener {
                     if (event.getClickedBlock().getLocation().distance(playerBase.loc) <= 16){
                         if (!(playerBase.name.equalsIgnoreCase(playerTeam.getName()))){
                             event.setCancelled(true);
+                            player.sendMessage(parameters.getPrefix() + ChatColor.RED + "You can't break other team's chests");
                         }
                     }
                 }
-
             }
         }
     }

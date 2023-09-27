@@ -139,7 +139,7 @@ public class BaseUsageListener implements Listener {
                         return;
                     }
                     baseList.add(new Base(player.getScoreboard().getPlayerTeam(player).getName(), block.getLocation()));
-                    BattlePlugin.getInstance().schematics(System.getProperty("user.dir") + "/schematics/Base.schem", player.getWorld(), block.getX() - 7, block.getY() - 1, block.getZ() - 5);
+                    BattlePlugin.getInstance().schematics(System.getProperty("user.dir") + "/schematics/Base.schem", player.getWorld(), block.getX() + 1, block.getY() - 1, block.getZ() + 3);
                     player.getWorld().getBlockAt(block.getLocation()).setType(Material.END_PORTAL_FRAME);
                 } else {
                     block.setType(Material.AIR);

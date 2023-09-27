@@ -15,7 +15,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -26,13 +25,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-import sun.jvm.hotspot.opto.Block;
-import sun.jvm.hotspot.opto.CallJavaNode;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 
 public class BattleCommand implements CommandExecutor {
@@ -206,7 +199,6 @@ public class BattleCommand implements CommandExecutor {
                             break;
                         }
                     }
-                    System.out.println(allInTeams);
                     boolean allTeamsHavePlayer = true;
                     for (Team team :
                             scoreboard.getTeams()) {
