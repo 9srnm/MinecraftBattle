@@ -78,7 +78,7 @@ public class ItemsUsageListener implements Listener {
                                     Location currentLoc = player.getLocation().clone();
                                     System.out.println(123);
                                     while (distance < player.getLocation().distance(target.getLocation())) {
-                                        currentLoc.add(direction);
+                                        currentLoc.clone().add(direction);
                                         player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, currentLoc, 5, 0, 0, 0, 0);
                                         distance += 1;
                                     }
@@ -173,7 +173,7 @@ public class ItemsUsageListener implements Listener {
             String teamName = (player.getScoreboard().getEntryTeam(player.getName()).getName());
             for(Base base : baseList){
                 if (base.name.equalsIgnoreCase(teamName)){
-                    player.teleport(base.loc.add(-6, 0, 9));
+                    player.teleport(base.loc.clone().add(-6, 0, 9));
                     break;
                 }
             }

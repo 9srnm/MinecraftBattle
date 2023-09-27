@@ -88,10 +88,11 @@ public final class BattlePlugin extends JavaPlugin {
 
         getCommand("battle").setExecutor(battleCommand);
         getCommand("battle").setTabCompleter(battleTabCompletion);
+        getCommand("shop").setExecutor(new ItemsCommands(parameters, baseList));
 
-        getCommand("give_stormbreaker").setExecutor(new ItemsCommands());
-        getCommand("give_elderwand").setExecutor(new ItemsCommands());
-        getCommand("give_excalibur").setExecutor(new ItemsCommands());
+        getCommand("give_stormbreaker").setExecutor(new ItemsCommands(parameters, baseList));
+        getCommand("give_elderwand").setExecutor(new ItemsCommands(parameters, baseList));
+        getCommand("give_excalibur").setExecutor(new ItemsCommands(parameters, baseList));
         getCommand("open_shop").setExecutor(new TestCommands(shopItemsLvl1, shopItemsLvl2));
 
         getServer().getPluginManager().registerEvents(new ItemsUsageListener(baseList), this);

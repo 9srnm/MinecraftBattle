@@ -15,6 +15,9 @@ commands:
     description: "Give you a Excalibur"
   open_shop:
     description: "Give you a Excalibur"
+  shop:
+    description: "Open shop"
+    permission: false
 permissions:
   battle.premission:
     description: "Allows you access /battle command"

@@ -96,7 +96,7 @@ public class PlayerDamageListener implements Listener {
                 }
             }
             int coordinateX = coordinates[0], coordinateZ = coordinates[1];
-            player.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().add(0, 1, 0));
+            player.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().clone().add(0, 1, 0));
 
             BukkitScheduler scheduler = Bukkit.getScheduler();
             final int[] taskId = new int[]{-1};
@@ -109,11 +109,18 @@ public class PlayerDamageListener implements Listener {
                     int fadeIn = 0, fadeOut = 0;
                     if (i == 1) fadeIn = 5;
                     if (i == 30) fadeOut = 5;
+                    if (!parameters.getGameRuns()) {
+                        scheduler.cancelTask(taskId[0]);
+                    }
                     player.sendTitle("" + ChatColor.BOLD + ChatColor.RED + (deathCooldownTime - i),  ChatColor.YELLOW+ "до респавна", fadeIn, 20 - fadeIn - fadeOut, fadeOut);
                     if (i == 30) {
-                        if (playerBase[0] == null) player.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().add(0, 1, 0));
+                        if (playerBase[0] == null) player.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().clone().add(0, 1, 0));
                         else {
-                            player.teleport(new Location(player.getWorld(), playerBase[0].loc.getX() - 6, playerBase[0].loc.getY(), playerBase[0].loc.getZ() + 9));
+                            if (parameters.getGameDay() > 6) {
+                                player.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().clone().add(0, 1, 0));
+                            }
+                            else {
+                            player.teleport(new Location(player.getWorld(), playerBase[0].loc.getX() - 6, playerBase[0].loc.getY(), playerBase[0].loc.getZ() + 9));}
                             player.setNoDamageTicks(200);
                             if (playerBase[0].baseLvl > 1) {
                                 for (PotionEffect pe :
@@ -184,7 +191,7 @@ public class PlayerDamageListener implements Listener {
                         Bukkit.getOnlinePlayers()) {
                     p.setGameMode(GameMode.SPECTATOR);
                     p.sendTitle(ChatColor.YELLOW + teamAlive.getName(), "победитель зарубы", 10, 180, 10);
-                    p.teleport(p.getWorld().getSpawnLocation().add(0, 20, 0));
+                    p.teleport(p.getWorld().getSpawnLocation().clone().add(0, 20, 0));
                 }
                 for (String p :
                         teamAlive.getEntries()) {

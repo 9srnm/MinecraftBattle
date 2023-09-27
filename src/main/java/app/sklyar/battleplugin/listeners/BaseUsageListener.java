@@ -163,7 +163,7 @@ public class BaseUsageListener implements Listener {
     @EventHandler
     public void onFlagBreak(BlockBreakEvent e) {
         if (parameters.getGameRuns()) {
-            if (e.getBlock().getType().equals(Material.END_PORTAL_FRAME) || e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().equals(Material.END_PORTAL_FRAME)) {
+            if (e.getBlock().getType().equals(Material.END_PORTAL_FRAME) || e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().clone().add(0, 1, 0)).getType().equals(Material.END_PORTAL_FRAME)) {
                 e.setCancelled(true);
             }
         }
@@ -187,8 +187,8 @@ public class BaseUsageListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onFlagExplode(BlockExplodeEvent e) {
         if (parameters.getGameRuns()) {
-            System.out.println(e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().toString());
-            if (e.getBlock().getType().equals(Material.END_PORTAL_FRAME) || e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().equals(Material.END_PORTAL_FRAME)) {
+            System.out.println(e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().clone().add(0, 1, 0)).getType().toString());
+            if (e.getBlock().getType().equals(Material.END_PORTAL_FRAME) || e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().clone().add(0, 1, 0)).getType().equals(Material.END_PORTAL_FRAME)) {
                 e.setCancelled(true);
             }
         }

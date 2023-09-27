@@ -53,7 +53,6 @@ public class BattleCommand implements CommandExecutor {
             Bukkit.getServer().getRecipe(Material.BREWING_STAND.getKey()),
             Bukkit.getServer().getRecipe(Material.BLAZE_POWDER.getKey()),
             Bukkit.getServer().getRecipe(Material.BEACON.getKey()),
-            Bukkit.getServer().getRecipe(Material.RED_BANNER.getKey()),
     };
 
     private final List<Base> baseList;
@@ -261,7 +260,7 @@ public class BattleCommand implements CommandExecutor {
                                     teams[i].getEntries()) {
                                 Player p = Bukkit.getServer().getPlayer(pString);
                                 if (p != null)
-                                    p.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().add(0, 1, 0));
+                                    p.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().clone().add(0, 1, 0));
                             }
                             ;
                         }
@@ -299,7 +298,7 @@ public class BattleCommand implements CommandExecutor {
                                                 public void run() {
                                                     int chestSpawnX = coordX + parameters.getBorderLength() * (iter[0] + 1) / parameters.getGameDay();
                                                     int chestSpawnZ = coordZ + parameters.getBorderLength() * (iter[0] + 1) / parameters.getGameDay();
-                                                    player.getWorld().getHighestBlockAt(chestSpawnX, chestSpawnZ).getLocation().add(0, 1, 0).getBlock().setType(Material.CHEST);
+                                                    player.getWorld().getHighestBlockAt(chestSpawnX, chestSpawnZ).getLocation().clone().add(0, 1, 0).getBlock().setType(Material.CHEST);
                                                     int chestSpawnY = player.getWorld().getHighestBlockAt(chestSpawnX, chestSpawnZ).getY();
 
                                                     ChestBreakListener chestBreakListener = new ChestBreakListener(chestSpawnX, chestSpawnY, chestSpawnZ, parameters);
@@ -330,7 +329,7 @@ public class BattleCommand implements CommandExecutor {
                                                                 Arrays.fill(possibilityDistribution, 25, 30, 2);
                                                                 ItemStack stack;
                                                                 for (int j = 0; j < 27; j++) {
-                                                                    int item = possibilityDistribution[rand.nextInt(10)];
+                                                                    int item = possibilityDistribution[rand.nextInt(100)];
                                                                     if (item == 0) {
                                                                         continue;
                                                                     } else if (item == 1) {
