@@ -142,7 +142,7 @@ public class BaseUsageListener implements Listener {
             if (placedBlockType == Material.END_PORTAL_FRAME) {
                 if (parameters.getGameDay() == 1) {
                     if (player.getScoreboard().getPlayerTeam(player) == null) return;
-                    if (player.getLocation().getY() <= 0) {
+                    if (Math.abs(player.getWorld().getHighestBlockAt(player.getLocation()).getY() - block.getLocation().getY()) >= 30) {
                         event.setCancelled(true);
                         return;
                     }
