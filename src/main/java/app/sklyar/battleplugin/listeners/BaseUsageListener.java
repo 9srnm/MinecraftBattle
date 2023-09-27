@@ -182,7 +182,7 @@ public class BaseUsageListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onFlagExplode(BlockExplodeEvent e) {
         if (parameters.getGameRuns()) {
             System.out.println(e.getBlock().getWorld().getBlockAt(e.getBlock().getLocation().add(0, 1, 0)).getType().toString());
