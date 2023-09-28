@@ -53,7 +53,7 @@ public class ItemsCommands implements CommandExecutor {
                     }
                 }
                 if (playerBase != null) {
-                    if (player.getLocation().distance(playerBase.loc) <= 32) {
+                    if (player.getLocation().distance(playerBase.loc) <= 16) {
                         player.openInventory(new BaseInventory().getInventory());
                     } else
                         player.sendMessage(parameters.getPrefix() + ChatColor.RED + "You are too far from your base (>32 blocks)");

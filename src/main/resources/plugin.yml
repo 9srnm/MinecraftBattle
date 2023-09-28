@@ -7,17 +7,11 @@ commands:
     description: "Create your own battles! Play team vs team. No limitations."
     permission: battle.permission
     usage: "Usage: /battle [start|stop|teams|setSpawnRadius|setDayLength|setNightLength|setBorderLength|setBorderShrinkTime]"
-  give_stormbreaker:
-    description: "Give you a Stormbreaker"
-  give_elderwand:
-    description: "Give you a Elder wand"
-  give_excalibur:
-    description: "Give you a Excalibur"
-  open_shop:
-    description: "Give you a Excalibur"
   shop:
     description: "Open shop"
-    permission: false
+  open_shop:
+    description: "open shop"
+    permission: battle.permission
 permissions:
   battle.premission:
     description: "Allows you access /battle command"

@@ -32,6 +32,7 @@ public class ShopInventory implements InventoryHolder{
             item = key.clone();
             ItemMeta meta= item.getItemMeta();
             List<String> lore = meta.getLore();
+            if (lore == null) lore = new ArrayList();
             lore.add("Cost = " + shopItemsLvl1.get(key) + " lvl 1 coins");
             meta.setLore(lore);
             item.setItemMeta(meta);
@@ -41,6 +42,7 @@ public class ShopInventory implements InventoryHolder{
             item = key.clone();
             ItemMeta meta= item.getItemMeta();
             List<String> lore = meta.getLore();
+            if (lore == null) lore = new ArrayList();
             lore.add("Cost = " + shopItemsLvl2.get(key) + " lvl 2 coins");
             meta.setLore(lore);
             item.setItemMeta(meta);

@@ -4,9 +4,9 @@ import app.sklyar.battleplugin.BattlePlugin;
 import app.sklyar.battleplugin.Items.ItemManager;
 import app.sklyar.battleplugin.classes.Base;
 import app.sklyar.battleplugin.classes.Parameters;
-//import app.sklyar.battleplugin.inventories.ShopInventory;
-//import com.sk89q.worldedit.WorldEdit;
-//import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import app.sklyar.battleplugin.inventories.ShopInventory;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.AbstractVillager;
@@ -147,7 +147,7 @@ public class BaseUsageListener implements Listener {
                         return;
                     }
                     baseList.add(new Base(player.getScoreboard().getPlayerTeam(player).getName(), block.getLocation()));
-                    //BattlePlugin.getInstance().schematics(System.getProperty("user.dir") + "/schematics/Base.schem", player.getWorld(), block.getX() + 1, block.getY() - 1, block.getZ() + 3);
+                    BattlePlugin.getInstance().schematics(System.getProperty("user.dir") + "/schematics/Base.schem", player.getWorld(), block.getX() + 1, block.getY() - 1, block.getZ() + 3);
                     player.getWorld().getBlockAt(block.getLocation()).setType(Material.END_PORTAL_FRAME);
                 } else {
                     block.setType(Material.AIR);

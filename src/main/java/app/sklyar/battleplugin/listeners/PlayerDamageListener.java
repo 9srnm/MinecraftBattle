@@ -116,11 +116,6 @@ public class PlayerDamageListener implements Listener {
                     if (i == 30) {
                         if (playerBase[0] == null) player.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().clone().add(0, 1, 0));
                         else {
-                            if (parameters.getGameDay() > 6) {
-                                player.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().clone().add(0, 1, 0));
-                            }
-                            else {
-                            player.teleport(new Location(player.getWorld(), playerBase[0].loc.getX() - 6, playerBase[0].loc.getY(), playerBase[0].loc.getZ() + 9));}
                             player.setNoDamageTicks(200);
                             if (playerBase[0].baseLvl > 1) {
                                 for (PotionEffect pe :
@@ -129,7 +124,13 @@ public class PlayerDamageListener implements Listener {
                                 }
                             }
                         }
-                        player.setGameMode(GameMode.SURVIVAL);
+                        if (parameters.getGameDay() > 6) {
+                            player.teleport(player.getWorld().getHighestBlockAt(coordinateX, coordinateZ).getLocation().clone().add(0, 1, 0));
+                        }
+                        else {
+                            player.setGameMode(GameMode.SURVIVAL);
+                            player.teleport(new Location(player.getWorld(), playerBase[0].loc.getX() - 6, playerBase[0].loc.getY(), playerBase[0].loc.getZ() + 9));
+                        }
                         scheduler.cancelTask(taskId[0]);
                     }
                 }

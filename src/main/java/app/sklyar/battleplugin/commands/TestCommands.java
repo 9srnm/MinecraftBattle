@@ -39,7 +39,7 @@ public class TestCommands implements CommandExecutor {
 
         if (command.getName().equalsIgnoreCase("open_shop")) {
 
-            Location location = player.getLocation();
+            Location location = player.getWorld().getSpawnLocation();
             ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
             armorStand.setVisible(false);
             armorStand.setGravity(false);

@@ -68,6 +68,7 @@ public final class BattlePlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        System.out.println("IM GAY");
 
         ItemManager.init();
 
@@ -85,6 +86,7 @@ public final class BattlePlugin extends JavaPlugin {
             put(new ItemStack(Material.GOLDEN_APPLE, 3), 1);
             put(new ItemStack(Material.ENDER_PEARL, 16), 1);
             put(new ItemStack(Material.TOTEM_OF_UNDYING, 1), 5);
+            put(ItemManager.stormbreaker, 3);
         }};
         // Plugin startup logic
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
@@ -95,12 +97,12 @@ public final class BattlePlugin extends JavaPlugin {
         getCommand("battle").setExecutor(battleCommand);
         getCommand("battle").setTabCompleter(battleTabCompletion);
         getCommand("shop").setExecutor(new ItemsCommands(parameters, baseList));
-
-        getCommand("give_stormbreaker").setExecutor(new ItemsCommands(parameters, baseList));
-        getCommand("give_elderwand").setExecutor(new ItemsCommands(parameters, baseList));
-        getCommand("give_excalibur").setExecutor(new ItemsCommands(parameters, baseList));
+//
+//        getCommand("give_stormbreaker").setExecutor(new ItemsCommands(parameters, baseList));
+//        getCommand("give_elderwand").setExecutor(new ItemsCommands(parameters, baseList));
+//        getCommand("give_excalibur").setExecutor(new ItemsCommands(parameters, baseList));
         getCommand("open_shop").setExecutor(new TestCommands(shopItemsLvl1, shopItemsLvl2));
-        getCommand("get_loc").setExecutor(new TestCommands(shopItemsLvl1, shopItemsLvl2));
+//        getCommand("get_loc").setExecutor(new TestCommands(shopItemsLvl1, shopItemsLvl2));
 
         getServer().getPluginManager().registerEvents(new ItemsUsageListener(baseList), this);
 

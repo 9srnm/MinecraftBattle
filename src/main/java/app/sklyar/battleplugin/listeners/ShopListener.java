@@ -96,6 +96,7 @@ public class ShopListener implements Listener {
                     if (coinsCount >= itemCost){
                         if (item.getType() == Material.BOW){
                             player.getInventory().addItem(new ItemStack(Material.ARROW, 1));
+                            player.getInventory().addItem(ItemManager.robinsbow);
                         }
                         else if (item.getType() == Material.NETHERITE_CHESTPLATE){
                             Team team = player.getScoreboard().getEntryTeam(player.getName());

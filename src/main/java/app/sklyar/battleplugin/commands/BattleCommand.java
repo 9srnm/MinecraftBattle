@@ -328,8 +328,8 @@ public class BattleCommand implements CommandExecutor {
                                                                 Random rand = new Random();
                                                                 int[] possibilityDistribution = new int[100];
                                                                 Arrays.fill(possibilityDistribution, 0);
-                                                                Arrays.fill(possibilityDistribution, 0, 25, 1);
-                                                                Arrays.fill(possibilityDistribution, 25, 30, 2);
+                                                                Arrays.fill(possibilityDistribution, 0, 70, 1);
+                                                                Arrays.fill(possibilityDistribution, 70, 80, 2);
                                                                 ItemStack stack;
                                                                 for (int j = 0; j < 27; j++) {
                                                                     int item = possibilityDistribution[rand.nextInt(100)];

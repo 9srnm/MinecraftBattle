@@ -25,10 +25,10 @@ public class Base {
     public Integer[] lvlCosts = {5, 10, 15, 20};
 
     public PotionEffect[][] effects = {
-            {new PotionEffect(PotionEffectType.FAST_DIGGING, PotionEffect.INFINITE_DURATION, 1, true, true, true)},
-            {new PotionEffect(PotionEffectType.FAST_DIGGING, PotionEffect.INFINITE_DURATION, 2, true, true, true), new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 1, true, true, true)},
-            {new PotionEffect(PotionEffectType.FAST_DIGGING, PotionEffect.INFINITE_DURATION, 2, true, true, true), new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 2, true, true, true), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, PotionEffect.INFINITE_DURATION, 1, true, true, true)},
-            {new PotionEffect(PotionEffectType.FAST_DIGGING, PotionEffect.INFINITE_DURATION, 2, true, true, true), new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 2, true, true, true), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, PotionEffect.INFINITE_DURATION, 2, true, true, true), new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 1, true, true, true)},
+            {new PotionEffect(PotionEffectType.FAST_DIGGING, PotionEffect.INFINITE_DURATION, 0, true, true, true)},
+            {new PotionEffect(PotionEffectType.FAST_DIGGING, PotionEffect.INFINITE_DURATION, 0, true, true, true), new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 0, true, true, true)},
+            {new PotionEffect(PotionEffectType.FAST_DIGGING, PotionEffect.INFINITE_DURATION, 0, true, true, true), new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 0, true, true, true), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, PotionEffect.INFINITE_DURATION, 0, true, true, true)},
+            {new PotionEffect(PotionEffectType.FAST_DIGGING, PotionEffect.INFINITE_DURATION, 0, true, true, true), new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 0, true, true, true), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, PotionEffect.INFINITE_DURATION, 0, true, true, true), new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 0, true, true, true)},
     };
 
     public Base(String name, Location loc){
